@@ -23,11 +23,9 @@ extension StartScreenController {
         return 0.0
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        print("Row selected is: \(indexPath.row)")
-
-    }
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
