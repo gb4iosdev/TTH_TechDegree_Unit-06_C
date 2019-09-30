@@ -17,15 +17,22 @@ class StartScreenController: UITableViewController {
 
 }
 
+//MARK: Tableview delegation
+
 extension StartScreenController {
     
+    //Set section gaps between sections to 0.01 (setting to 0 will revert to default)
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0.0
+        return 0.01
     }
     
-//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//    }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.01
+    }
+}
+
+
+extension StartScreenController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
