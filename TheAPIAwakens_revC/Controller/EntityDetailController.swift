@@ -14,14 +14,18 @@ class EntityDetailController: UITableViewController {
     let client = StarWarsAPIClient()
 
     //Outlet variables
+    
+    @IBOutlet weak var headerLabel: UILabel!
+    
+    @IBOutlet var mainRowLabels: [UILabel]!
+    @IBOutlet var mainRowFields: [UILabel]!
+    
+    @IBOutlet weak var pilotsCell: UITableViewCell!
+    @IBOutlet weak var pilotsLabel: UILabel!
+    
     @IBOutlet weak var entityPicker: UIPickerView!
     @IBOutlet weak var shortestButton: UIButton!
     @IBOutlet weak var tallestButton: UIButton!
-    @IBOutlet var mainRowLabels: [UILabel]!
-    @IBOutlet var mainRowFields: [UILabel]!
-    @IBOutlet weak var pilotsCell: UITableViewCell!
-    
-    @IBOutlet weak var pilotsLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,9 +48,9 @@ class EntityDetailController: UITableViewController {
         UINavigationBar.appearance().titleTextAttributes = attrs
 
         if let navBarItem = navigationController?.navigationBar.topItem {
-            navBarItem.title = ""
+            navBarItem.title = "Characters"
         }
-        self.navigationItem.titleView = UIImageView(image: UIImage(named: "icon-characters"))
+        //self.navigationItem.titleView = UIImageView(image: UIImage(named: "icon-characters"))
         
         pilotsCell.accessoryType = .none
         
@@ -68,6 +72,11 @@ class EntityDetailController: UITableViewController {
             entityPicker.selectRow(maximumHeightCharacterIndex, inComponent: 0, animated: true)
             setFieldValues(for: maximumHeightCharacterIndex)
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
+        client.session.invalidateAndCancel()
     }
     
 }
@@ -277,6 +286,7 @@ extension EntityDetailController {
     }
     
     func setFieldValues(using viewModel: EntityViewModel) {
+        headerLabel.text = viewModel.name
         mainRowFields[0].text = viewModel.row1
         mainRowFields[1].text = viewModel.row2
         mainRowFields[2].text = viewModel.row3

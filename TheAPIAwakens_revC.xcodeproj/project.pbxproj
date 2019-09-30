@@ -34,6 +34,7 @@
 		8669746523413D8D00FE87E5 /* CraftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8669746323413D8D00FE87E5 /* CraftViewModel.swift */; };
 		8669746623413D8D00FE87E5 /* CharacterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8669746423413D8D00FE87E5 /* CharacterViewModel.swift */; };
 		8669746823413F6900FE87E5 /* EntityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8669746723413F6900FE87E5 /* EntityViewModel.swift */; };
+		868D0FDA23420C6F001B7AEB /* PilotedCraftController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868D0FD923420C6F001B7AEB /* PilotedCraftController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,7 @@
 		8669746323413D8D00FE87E5 /* CraftViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CraftViewModel.swift; sourceTree = "<group>"; };
 		8669746423413D8D00FE87E5 /* CharacterViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterViewModel.swift; sourceTree = "<group>"; };
 		8669746723413F6900FE87E5 /* EntityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityViewModel.swift; sourceTree = "<group>"; };
+		868D0FD923420C6F001B7AEB /* PilotedCraftController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PilotedCraftController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +176,7 @@
 			children = (
 				86024C34233FE0030026A7E5 /* StartScreenController.swift */,
 				86024C36233FE6D50026A7E5 /* EntityDetailController.swift */,
+				868D0FD923420C6F001B7AEB /* PilotedCraftController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				86024C40234038F30026A7E5 /* People.swift in Sources */,
 				86024C41234038F30026A7E5 /* Vehicles.swift in Sources */,
 				8669746823413F6900FE87E5 /* EntityViewModel.swift in Sources */,
+				868D0FDA23420C6F001B7AEB /* PilotedCraftController.swift in Sources */,
 				86024C59234039F90026A7E5 /* StarWarsAPIError.swift in Sources */,
 				86024C542340393D0026A7E5 /* CharacterDetail.swift in Sources */,
 				86024C4F2340393D0026A7E5 /* Vehicle.swift in Sources */,

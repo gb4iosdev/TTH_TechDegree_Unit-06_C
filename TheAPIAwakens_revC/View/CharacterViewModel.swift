@@ -10,13 +10,13 @@ import Foundation
 
 struct CharacterViewModel: EntityViewModel {
     
+    let name: String
+    
     let row1: String    //Birthyear
     let row2: String    //Home
     let row3: String    //Height
     let row4: String    //Eyes
     let row5: String    //Hair
-    
-    let name: String
 }
 
 extension CharacterViewModel {
