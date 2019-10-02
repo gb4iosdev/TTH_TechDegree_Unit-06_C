@@ -17,6 +17,8 @@ struct CharacterViewModel: EntityViewModel {
     let row3: String    //Height
     let row4: String    //Eyes
     let row5: String    //Hair
+    
+    let hasPilotedCraft: Bool
 }
 
 extension CharacterViewModel {
@@ -35,6 +37,7 @@ extension CharacterViewModel {
             self.row4 = detail.eyeColour
             self.row5 = detail.hairColour
             self.row2 = detail.home ?? ""
+            self.hasPilotedCraft = detail.vehiclesPiloted.count > 0 || detail.starshipsPiloted.count > 0
             
         } else {
             return nil

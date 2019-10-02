@@ -24,36 +24,22 @@ class EntityDetailController: UITableViewController {
     @IBOutlet weak var pilotsLabel: UILabel!
     
     @IBOutlet weak var entityPicker: UIPickerView!
+    @IBOutlet weak var shortestLabel: UILabel!
     @IBOutlet weak var shortestButton: UIButton!
+    @IBOutlet weak var longestLabel: UILabel!
     @IBOutlet weak var tallestButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         guard let entitiesToLoad = allEntities else {
-            print("cannot load entities")
+            print("Error: Entities not specified - cannot load entities")
             return
         }
         
+        //Set Pickerview data source and delegate
         entityPicker.delegate = self
         entityPicker.dataSource = self
-        
-        //navigationController?.navigationBar.barStyle = .black
-        
-        let attrs = [
-            NSAttributedString.Key.foregroundColor: UIColor.red,
-            NSAttributedString.Key.font: UIFont(name: "Georgia-Bold", size: 32)!
-        ]
-        
-        UINavigationBar.appearance().titleTextAttributes = attrs
-
-        if let navBarItem = navigationController?.navigationBar.topItem {
-            navBarItem.title = "Characters"
-        }
-        //self.navigationItem.titleView = UIImageView(image: UIImage(named: "icon-characters"))
-        
-        pilotsCell.accessoryType = .none
-        
         
         setFieldLabels()
         fetchEntities(entitiesToLoad: entitiesToLoad)
@@ -61,16 +47,49 @@ class EntityDetailController: UITableViewController {
     }
     
     @IBAction func shortestButtonPressed(_ sender: Any) {
-        if let minimumHeightCharacterIndex = People.minimumHeightCharacterIndex {
-            entityPicker.selectRow(minimumHeightCharacterIndex, inComponent: 0, animated: true)
-            setFieldValues(for: minimumHeightCharacterIndex)
+        
+        guard let entities = self.allEntities else { return }
+        
+        switch entities {
+        case .characters:
+            if let minimumHeightCharacterIndex = People.minimumHeightCharacterIndex {
+                entityPicker.selectRow(minimumHeightCharacterIndex, inComponent: 0, animated: true)
+                setFieldValues(for: minimumHeightCharacterIndex)
+            }
+        case .vehicles:
+            if let minimumLengthVehicleIndex = Vehicles.minimumLengthCraftIndex {
+                entityPicker.selectRow(minimumLengthVehicleIndex, inComponent: 0, animated: true)
+                setFieldValues(for: minimumLengthVehicleIndex)
+            }
+        case .starships:
+            if let minimumLengthStarshipIndex = Starships.minimumLengthCraftIndex {
+                entityPicker.selectRow(minimumLengthStarshipIndex, inComponent: 0, animated: true)
+                setFieldValues(for: minimumLengthStarshipIndex)
+            }
         }
+        
     }
     
     @IBAction func tallestButtonPressed(_ sender: Any) {
-        if let maximumHeightCharacterIndex = People.maximumHeightCharacterIndex {
-            entityPicker.selectRow(maximumHeightCharacterIndex, inComponent: 0, animated: true)
-            setFieldValues(for: maximumHeightCharacterIndex)
+        
+        guard let entities = self.allEntities else { return }
+        
+        switch entities {
+        case .characters:
+            if let maximumHeightCharacterIndex = People.maximumHeightCharacterIndex {
+                entityPicker.selectRow(maximumHeightCharacterIndex, inComponent: 0, animated: true)
+                setFieldValues(for: maximumHeightCharacterIndex)
+            }
+        case .vehicles:
+            if let maximumLengthVehicleIndex = Vehicles.maximumLengthCraftIndex {
+                entityPicker.selectRow(maximumLengthVehicleIndex, inComponent: 0, animated: true)
+                setFieldValues(for: maximumLengthVehicleIndex)
+            }
+        case .starships:
+            if let maximumLengthStarshipIndex = Starships.maximumLengthCraftIndex {
+                entityPicker.selectRow(maximumLengthStarshipIndex, inComponent: 0, animated: true)
+                setFieldValues(for: maximumLengthStarshipIndex)
+            }
         }
     }
     
@@ -109,9 +128,9 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
         guard let entities = self.allEntities else { return 0 }
         
         switch entities {
-        case .Characters:   return People.allEntities.count
-        case .Vehicles:     return Vehicles.allEntities.count
-        case .Starships:    return Starships.allEntities.count
+        case .characters:   return People.allEntities.count
+        case .vehicles:     return Vehicles.allEntities.count
+        case .starships:    return Starships.allEntities.count
         }
     }
     
@@ -120,9 +139,9 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
         guard let entities = self.allEntities else { return "" }
         
         switch entities {
-        case .Characters:   return People.allEntities[row].name
-        case .Vehicles:     return Vehicles.allEntities[row].name
-        case .Starships:    return Starships.allEntities[row].name
+        case .characters:   return People.allEntities[row].name
+        case .vehicles:     return Vehicles.allEntities[row].name
+        case .starships:    return Starships.allEntities[row].name
         }
         
     }
@@ -141,21 +160,21 @@ extension EntityDetailController {
     func fetchEntities(entitiesToLoad allEntities: AllEntities) {
         
         switch allEntities {
-        case .Characters:
+        case .characters:
             if People.allEntities.count == 0 {
                 retrieveAllEntities(using: Endpoint.people.fullURL(), toType: People.self)
             } else {
                 entityPicker.reloadAllComponents()
                 self.updateUI()
             }
-        case .Vehicles:
+        case .vehicles:
             if Vehicles.allEntities.count == 0 {
                 retrieveAllEntities(using: Endpoint.vehicles.fullURL(), toType: Vehicles.self)
             } else {
                 entityPicker.reloadAllComponents()
                 self.updateUI()
             }
-        case .Starships:
+        case .starships:
             if Starships.allEntities.count == 0 {
                 retrieveAllEntities(using: Endpoint.starships.fullURL(), toType: Starships.self)
             } else {
@@ -191,7 +210,13 @@ extension EntityDetailController {
                     if let nextURL = nextURL {
                         self.retrieveAllEntities(using: nextURL, toType: type)
                     } else {        //Final page and allEntity static arrays are loaded.  Reload the picker.
-                        People.configure()
+                        if let allEntities = entities as? People {
+                            People.configure()
+                        }
+                        else if let allEntities = entities as? Vehicles { Vehicles.configure()
+                        } else if let allEntities = entities as? Starships {
+                            Starships.configure()
+                        }
                         self.entityPicker.reloadAllComponents()
                         self.updateUI()
                     }
@@ -201,6 +226,28 @@ extension EntityDetailController {
             }
         }
     }
+    
+    func fetchCharacterHomeworld(for character: Character, withPeopleIndex index: Int) {
+        
+        //Ensure character detail is available:
+        guard var detail = character.detail else { return }
+        
+        client.getStarWarsData(from: detail.homeworldURL, toType: Planet.self) { [unowned self] planetDetail, error in
+            if let planetDetail = planetDetail {
+                detail.home = planetDetail.name
+                //Write back to the allEntities static array
+                People.allEntities[index] = character
+                if let viewModel = CharacterViewModel(from: character) {
+                    self.setFieldValues(using: viewModel)
+                } else {
+                    print("Error: Could not create view model")
+                }
+            } else {
+                print("Error: Network call didn't work:\(error)")
+            }
+        }
+    }
+
 
 }
 
@@ -209,13 +256,25 @@ extension EntityDetailController {
     
     func updateUI(){
         
-        //Set the field labels for the entities type being displayed
-        setFieldLabels()
+        guard let entities = self.allEntities else { return }
         
         //Set the shortest/tallest buttons
-        if let minimumHeightCharacterIndex = People.minimumHeightCharacterIndex, let maximumHeightCharacterIndex = People.maximumHeightCharacterIndex {
-            shortestButton.setTitle(People.allEntities[minimumHeightCharacterIndex].name, for: .normal)
-            tallestButton.setTitle(People.allEntities[maximumHeightCharacterIndex].name, for: .normal)
+        switch entities {
+            case .characters:
+            if let minimumHeightCharacterIndex = People.minimumHeightCharacterIndex, let maximumHeightCharacterIndex = People.maximumHeightCharacterIndex {
+                shortestButton.setTitle(People.allEntities[minimumHeightCharacterIndex].name, for: .normal)
+                tallestButton.setTitle(People.allEntities[maximumHeightCharacterIndex].name, for: .normal)
+            }
+            case .vehicles:
+            if let minimumLengthCraftIndex = Vehicles.minimumLengthCraftIndex, let maximumLengthCraftIndex = Vehicles.maximumLengthCraftIndex {
+                shortestButton.setTitle(Vehicles.allEntities[minimumLengthCraftIndex].name, for: .normal)
+                tallestButton.setTitle(Vehicles.allEntities[maximumLengthCraftIndex].name, for: .normal)
+            }
+            case .starships:
+            if let minimumLengthCraftIndex = Starships.minimumLengthCraftIndex, let maximumLengthCraftIndex = Starships.maximumLengthCraftIndex {
+                shortestButton.setTitle(Starships.allEntities[minimumLengthCraftIndex].name, for: .normal)
+                tallestButton.setTitle(Starships.allEntities[maximumLengthCraftIndex].name, for: .normal)
+            }
         }
         
         //Set field values for the picker default row
@@ -227,42 +286,41 @@ extension EntityDetailController {
         guard let entities = self.allEntities else { return }
         
         switch entities {
-        case .Characters:
-            mainRowLabels?[CharacterLabel.born.rawValue].text = CharacterLabel.born.text()
-            mainRowLabels?[CharacterLabel.home.rawValue].text = CharacterLabel.home.text()
-            mainRowLabels?[CharacterLabel.height.rawValue].text = CharacterLabel.height.text()
-            mainRowLabels?[CharacterLabel.eyes.rawValue].text = CharacterLabel.eyes.text()
-            mainRowLabels?[CharacterLabel.hair.rawValue].text = CharacterLabel.hair.text()
-        case .Vehicles, .Starships:
-            mainRowLabels?[CraftLabel.make.rawValue].text = CraftLabel.make.text()
-            mainRowLabels?[CraftLabel.cost.rawValue].text = CraftLabel.cost.text()
-            mainRowLabels?[CraftLabel.length.rawValue].text = CraftLabel.length.text()
-            mainRowLabels?[CraftLabel.class.rawValue].text = CraftLabel.class.text()
-            mainRowLabels?[CraftLabel.crew.rawValue].text = CraftLabel.crew.text()
+        case .characters:
+            mainRowLabels?[0].text = "Born"
+            mainRowLabels?[1].text = "Home"
+            mainRowLabels?[2].text = "Height"
+            mainRowLabels?[3].text = "Eyes"
+            mainRowLabels?[4].text = "Hair"
+            shortestLabel.text = "Shortest"
+            longestLabel.text = "Tallest"
+        case .vehicles, .starships:
+            mainRowLabels?[0].text = "Make"
+            mainRowLabels?[1].text = "Cost"
+            mainRowLabels?[2].text = " Length"
+            mainRowLabels?[3].text = "Class"
+            mainRowLabels?[4].text = "Crew"
+            shortestLabel.text = "Shortest"
+            longestLabel.text = "Longest"
         }
     }
     
-    //set field values based on entity picked
+    //Fetch entity values based on entity picked
     func setFieldValues(for pickerRowNumber: Int) {
         
         guard let entities = self.allEntities else { return }
         
         
         switch entities {
-        case .Characters:
+        case .characters:
             var character = People.allEntities[pickerRowNumber]
             //Check to see if the character detail is missing
             if character.detail == nil {
                 client.getStarWarsData(from: character.url, toType: CharacterDetail.self) { [unowned self] characterDetail, error in
                     if let characterDetail = characterDetail {
                         character.detail = characterDetail
-                        //Write back to the allEntities static array
-                        People.allEntities[pickerRowNumber] = character
-                        if let viewModel = CharacterViewModel(from: character) {
-                            self.setFieldValues(using: viewModel)
-                        } else {
-                            print("Error: Could not create view model")
-                        }
+                        //Fetch homeworld name:
+                        self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
                     } else {
                         print("Network call didn't work:\(error)")
                     }
@@ -277,12 +335,62 @@ extension EntityDetailController {
             }
 
             
-        case .Vehicles:
-            break
-        case .Starships:
-            break
+        case .vehicles:
+            var vehicle = Vehicles.allEntities[pickerRowNumber]
+            //Check to see if the vehicle detail is missing
+            if vehicle.detail == nil {
+                client.getStarWarsData(from: vehicle.url, toType: VehicleDetail.self) { [unowned self] vehicleDetail, error in
+                    if let vehicleDetail = vehicleDetail {
+                        //Assign to the network call results to the vehicle’s detail property
+                        vehicle.detail = vehicleDetail
+                        //Write back to the allEntities static array
+                        Vehicles.allEntities[pickerRowNumber] = vehicle
+                        if let viewModel = VehicleViewModel(from: vehicle) {
+                            self.setFieldValues(using: viewModel)
+                        } else {
+                            print("Error: Could not create view model")
+                        }
+                    } else {
+                        print("Network call didn't work:\(error)")
+                    }
+                }
+            } else {    //Data exists - simply load
+                print("Data already exists for \(vehicle.name) - no need for network call")
+                if let viewModel = VehicleViewModel(from: vehicle) {
+                    setFieldValues(using: viewModel)
+                } else {
+                    print("Error: Could not create view model")
+                }
+            }
+            
+        case .starships:
+            var starship = Starships.allEntities[pickerRowNumber]
+            //Check to see if the starship detail is missing
+            if starship.detail == nil {
+                client.getStarWarsData(from: starship.url, toType: StarshipDetail.self) { [unowned self] starshipDetail, error in
+                    if let starshipDetail = starshipDetail {
+                        //Assign to the network call results to the starship’s detail property
+                        starship.detail = starshipDetail
+                        //Write back to the allEntities static array
+                        Starships.allEntities[pickerRowNumber] = starship
+                        if let viewModel = StarshipViewModel(from: starship) {
+                            self.setFieldValues(using: viewModel)
+                        } else {
+                            print("Error: Could not create view model")
+                        }
+                    } else {
+                        print("Network call didn't work:\(error)")
+                    }
+                }
+            } else {    //Data exists - simply load
+                print("Data already exists for \(starship.name) - no need for network call")
+                if let viewModel = StarshipViewModel(from: starship) {
+                    setFieldValues(using: viewModel)
+                } else {
+                    print("Error: Could not create view model")
+                }
+            }
         }
-    
     }
     
     func setFieldValues(using viewModel: EntityViewModel) {
@@ -292,5 +400,40 @@ extension EntityDetailController {
         mainRowFields[2].text = viewModel.row3
         mainRowFields[3].text = viewModel.row4
         mainRowFields[4].text = viewModel.row5
+        
+        //Check for piloted craft & turn on accessibility indicator if present
+        if let characterViewModel = viewModel as? CharacterViewModel {
+            if characterViewModel.hasPilotedCraft {
+                pilotsCell.accessoryType = .disclosureIndicator
+            }
+        }
+    }
+
+    
+}
+
+//MARK: - Segues
+extension EntityDetailController {
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        print("In should perform segue")
+        //Only segue from Character & with correct identifier
+        if identifier == "pilotedVehicles" && self.allEntities == .characters {
+            return true
+        }
+        return false
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        //Get the destination view controller - only if the right type
+        guard let pilotedCraftController = segue.destination as? PilotedCraftController else {
+            print("Error:  Attempted segue not registered")
+            return
+        }
+        
+        pilotedCraftController.character = People.allEntities[entityPicker.selectedRow(inComponent: 0)]
+        pilotedCraftController.pickerIndex = entityPicker.selectedRow(inComponent: 0)
     }
 }
+

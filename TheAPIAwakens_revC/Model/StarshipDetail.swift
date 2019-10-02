@@ -1,32 +1,29 @@
 //
-//  Starship.swift
-//  theAPIAwakens
+//  StarshipDetail.swift
+//  TheAPIAwakens_revC
 //
-//  Created by Gavin Butler on 16-09-2019.
+//  Created by Gavin Butler on 01-10-2019.
 //  Copyright © 2019 Gavin Butler. All rights reserved.
 //
 
 import Foundation
 
-struct Starship: Codable {
+struct StarshipDetail: Codable {
     
-    let name: String
-    let url: URL
-    private let lengthString: String
-    var length: Double? {
-        return Double(lengthString)
-    }
-    
-    var detail: StarshipDetail?
+    let make: String
+    let cost: String
+    let craftClass: String
+    let crewCapacity: String
     
     enum CodingKeys: String, CodingKey {
-        case name
-        case lengthString = "length"
-        case url
+        case make = "model"
+        case cost = "cost_in_credits"
+        case craftClass = "starship_class"
+        case crewCapacity = "crew"
     }
 }
     
-/*  Example:
+    /*
      
      {
      "name": "Death Star",
@@ -51,11 +48,11 @@ struct Starship: Codable {
      "url": "https://swapi.co/api/starships/9/"
      }
      
-    */
+     */
 
 
 /*
-
+ 
  Schema:
  
  {
@@ -162,4 +159,4 @@ struct Starship: Codable {
  "$schema": "http://json-schema.org/draft-04/schema"
  }
  
-*/
+ */

@@ -15,7 +15,6 @@ struct CharacterDetail: Codable {
     let homeworldURL: URL
     let eyeColour: String
     let hairColour: String
-    let url: URL
     let vehiclesPiloted: [URL]
     let starshipsPiloted: [URL]
     
@@ -30,7 +29,6 @@ struct CharacterDetail: Codable {
         case homeworldURL = "homeworld"
         case eyeColour = "eye_color"
         case hairColour = "hair_color"
-        case url
         case vehiclesPiloted = "vehicles"
         case starshipsPiloted = "starships"
     }

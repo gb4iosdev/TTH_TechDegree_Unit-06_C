@@ -9,7 +9,7 @@
 import Foundation
 
 enum AllEntities: String {
-    case Characters
-    case Vehicles
-    case Starships
+    case characters
+    case vehicles
+    case starships
 }

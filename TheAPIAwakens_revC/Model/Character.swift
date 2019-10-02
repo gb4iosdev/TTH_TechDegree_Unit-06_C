@@ -23,4 +23,13 @@ struct Character: Codable {
         case heightString = "height"
         case url
     }
+    
+    func hasAlreadyFetchedCraft() -> Bool {
+        if let detail = self.detail, detail.vehicleNames != nil,  detail.starshipNames  != nil {
+            return true
+        } else {
+            return false
+        }
+    }
+
 }
