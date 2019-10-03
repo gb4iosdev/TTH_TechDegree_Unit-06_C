@@ -27,7 +27,8 @@ class EntityDetailController: UITableViewController {
     @IBOutlet weak var shortestLabel: UILabel!
     @IBOutlet weak var shortestButton: UIButton!
     @IBOutlet weak var longestLabel: UILabel!
-    @IBOutlet weak var tallestButton: UIButton!
+    @IBOutlet weak var longestButton: UIButton!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,8 +42,12 @@ class EntityDetailController: UITableViewController {
         entityPicker.delegate = self
         entityPicker.dataSource = self
         
+        
+        initializeUI()
         setFieldLabels()
         fetchEntities(entitiesToLoad: entitiesToLoad)
+        
+        
         
     }
     
@@ -70,7 +75,8 @@ class EntityDetailController: UITableViewController {
         
     }
     
-    @IBAction func tallestButtonPressed(_ sender: Any) {
+    
+    @IBAction func longestButtonPressed(_ sender: UIButton) {
         
         guard let entities = self.allEntities else { return }
         
@@ -93,10 +99,10 @@ class EntityDetailController: UITableViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
-        client.session.invalidateAndCancel()
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
+//        client.session.invalidateAndCancel()
+//    }
     
 }
 
@@ -154,7 +160,7 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
     
 }
 
-//Helper Methods - Networking
+//MARK: - Helper Methods - Networking
 extension EntityDetailController {
     
     func fetchEntities(entitiesToLoad allEntities: AllEntities) {
@@ -247,63 +253,6 @@ extension EntityDetailController {
             }
         }
     }
-
-
-}
-
-//MARK: - Helper Methods - UI
-extension EntityDetailController {
-    
-    func updateUI(){
-        
-        guard let entities = self.allEntities else { return }
-        
-        //Set the shortest/tallest buttons
-        switch entities {
-            case .characters:
-            if let minimumHeightCharacterIndex = People.minimumHeightCharacterIndex, let maximumHeightCharacterIndex = People.maximumHeightCharacterIndex {
-                shortestButton.setTitle(People.allEntities[minimumHeightCharacterIndex].name, for: .normal)
-                tallestButton.setTitle(People.allEntities[maximumHeightCharacterIndex].name, for: .normal)
-            }
-            case .vehicles:
-            if let minimumLengthCraftIndex = Vehicles.minimumLengthCraftIndex, let maximumLengthCraftIndex = Vehicles.maximumLengthCraftIndex {
-                shortestButton.setTitle(Vehicles.allEntities[minimumLengthCraftIndex].name, for: .normal)
-                tallestButton.setTitle(Vehicles.allEntities[maximumLengthCraftIndex].name, for: .normal)
-            }
-            case .starships:
-            if let minimumLengthCraftIndex = Starships.minimumLengthCraftIndex, let maximumLengthCraftIndex = Starships.maximumLengthCraftIndex {
-                shortestButton.setTitle(Starships.allEntities[minimumLengthCraftIndex].name, for: .normal)
-                tallestButton.setTitle(Starships.allEntities[maximumLengthCraftIndex].name, for: .normal)
-            }
-        }
-        
-        //Set field values for the picker default row
-        setFieldValues(for: 0)
-    }
-    
-    func setFieldLabels() {
-        
-        guard let entities = self.allEntities else { return }
-        
-        switch entities {
-        case .characters:
-            mainRowLabels?[0].text = "Born"
-            mainRowLabels?[1].text = "Home"
-            mainRowLabels?[2].text = "Height"
-            mainRowLabels?[3].text = "Eyes"
-            mainRowLabels?[4].text = "Hair"
-            shortestLabel.text = "Shortest"
-            longestLabel.text = "Tallest"
-        case .vehicles, .starships:
-            mainRowLabels?[0].text = "Make"
-            mainRowLabels?[1].text = "Cost"
-            mainRowLabels?[2].text = " Length"
-            mainRowLabels?[3].text = "Class"
-            mainRowLabels?[4].text = "Crew"
-            shortestLabel.text = "Shortest"
-            longestLabel.text = "Longest"
-        }
-    }
     
     //Fetch entity values based on entity picked
     func setFieldValues(for pickerRowNumber: Int) {
@@ -333,7 +282,7 @@ extension EntityDetailController {
                     print("Error: Could not create view model")
                 }
             }
-
+            
             
         case .vehicles:
             var vehicle = Vehicles.allEntities[pickerRowNumber]
@@ -392,6 +341,80 @@ extension EntityDetailController {
             }
         }
     }
+
+
+}
+
+//MARK: - Helper Methods - UI
+extension EntityDetailController {
+    
+    func updateUI(){
+        
+        guard let entities = self.allEntities else { return }
+        
+        //Set the shortest/tallest buttons
+        switch entities {
+            case .characters:
+            if let minimumHeightCharacterIndex = People.minimumHeightCharacterIndex, let maximumHeightCharacterIndex = People.maximumHeightCharacterIndex {
+                shortestButton.setTitle(People.allEntities[minimumHeightCharacterIndex].name, for: .normal)
+                longestButton.setTitle(People.allEntities[maximumHeightCharacterIndex].name, for: .normal)
+            }
+            case .vehicles:
+            if let minimumLengthCraftIndex = Vehicles.minimumLengthCraftIndex, let maximumLengthCraftIndex = Vehicles.maximumLengthCraftIndex {
+                shortestButton.setTitle(Vehicles.allEntities[minimumLengthCraftIndex].name, for: .normal)
+                longestButton.setTitle(Vehicles.allEntities[maximumLengthCraftIndex].name, for: .normal)
+            }
+            case .starships:
+            if let minimumLengthCraftIndex = Starships.minimumLengthCraftIndex, let maximumLengthCraftIndex = Starships.maximumLengthCraftIndex {
+                shortestButton.setTitle(Starships.allEntities[minimumLengthCraftIndex].name, for: .normal)
+                longestButton.setTitle(Starships.allEntities[maximumLengthCraftIndex].name, for: .normal)
+            }
+        }
+        
+        //Set field values for the picker default row
+        setFieldValues(for: 0)
+    }
+    
+    func setFieldLabels() {
+        
+        guard let entities = self.allEntities else { return }
+        
+        switch entities {
+        case .characters:
+            mainRowLabels?[0].text = "Born"
+            mainRowLabels?[1].text = "Home"
+            mainRowLabels?[2].text = "Height"
+            mainRowLabels?[3].text = "Eyes"
+            mainRowLabels?[4].text = "Hair"
+            longestLabel.text = "Tallest"
+            pilotsLabel.isHidden = false
+            
+        case .vehicles, .starships:
+            mainRowLabels?[0].text = "Make"
+            mainRowLabels?[1].text = "Cost"
+            mainRowLabels?[2].text = " Length"
+            mainRowLabels?[3].text = "Class"
+            mainRowLabels?[4].text = "Crew"
+            longestLabel.text = "Longest"
+            pilotsLabel.isHidden = true
+            pilotsCell.accessoryType = .none
+        }
+    }
+    
+    func showFields(setTo: Bool) {
+        
+        headerLabel.isHidden = !setTo
+        
+        for field in mainRowFields {
+            field.isHidden = !setTo
+        }
+    }
+    
+    func showLengthButtons(setTo: Bool) {
+        
+        shortestButton.isHidden = !setTo
+        longestButton.isHidden = !setTo
+    }
     
     func setFieldValues(using viewModel: EntityViewModel) {
         headerLabel.text = viewModel.name
@@ -407,8 +430,19 @@ extension EntityDetailController {
                 pilotsCell.accessoryType = .disclosureIndicator
             }
         }
+        
+        showFields(setTo: true)
     }
 
+    func initializeUI() {
+        shortestButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        shortestButton.layer.borderWidth = 1
+        shortestButton.layer.borderColor = UIColor.darkGray.cgColor
+        longestButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        longestButton.layer.borderWidth = 1
+        longestButton.layer.borderColor = UIColor.darkGray.cgColor
+        mainRowFields[0].adjustsFontSizeToFitWidth = true
+    }
     
 }
 

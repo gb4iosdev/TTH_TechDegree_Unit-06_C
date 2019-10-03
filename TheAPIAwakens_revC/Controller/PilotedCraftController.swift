@@ -19,6 +19,7 @@ class PilotedCraftController: UITableViewController {
     
     var sectionData = [["<None Piloted>"], ["<None Piloted>"]]
     let sectionTitles = ["Vehicles", "Starships"]
+    let sectionImage: [UIImage] = [UIImage(named: "icon-vehicles")!, UIImage(named: "icon-starships")!]
     
 
     override func viewDidLoad() {
@@ -60,8 +61,42 @@ extension PilotedCraftController {
         return sectionData.count
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionTitles[section]
+    //Set section gaps between sections to 0.01 (setting to 0 will revert to default)
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 45
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.01
+    }
+    
+//    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        return sectionTitles[section]
+//    }
+
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = .black
+        
+        let imageView = UIImageView(image: sectionImage[section])
+        imageView.frame = CGRect(x: 5, y: 5, width: 35, height: 35)
+        view.addSubview(imageView)
+        
+        let text = sectionTitles[section]
+        let font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+        let attributes: [NSAttributedString.Key: Any] = [  .font: font,
+                                                           .foregroundColor: UIColor(red:0.49, green:0.84, blue:1.00, alpha:1.0)
+            
+        ]
+        let attributedText = NSAttributedString(string: text, attributes: attributes)
+        
+        
+        let label = UILabel()
+        label.attributedText = attributedText
+        label.frame = CGRect(x: 45, y: 5, width: 200, height: 35)
+        view.addSubview(label)
+        
+        return view
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
