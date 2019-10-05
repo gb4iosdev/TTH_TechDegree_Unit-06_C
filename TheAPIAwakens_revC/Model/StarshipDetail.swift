@@ -11,13 +11,16 @@ import Foundation
 struct StarshipDetail: Codable {
     
     let make: String
-    let cost: String
+    private let costString: String
+    var cost: Int? {
+        return Int(costString)
+    }
     let craftClass: String
     let crewCapacity: String
     
     enum CodingKeys: String, CodingKey {
         case make = "model"
-        case cost = "cost_in_credits"
+        case costString = "cost_in_credits"
         case craftClass = "starship_class"
         case crewCapacity = "crew"
     }

@@ -41,13 +41,11 @@ class EntityDetailController: UITableViewController {
         //Set Pickerview data source and delegate
         entityPicker.delegate = self
         entityPicker.dataSource = self
-        
+
         
         initializeUI()
         setFieldLabels()
         fetchEntities(entitiesToLoad: entitiesToLoad)
-        
-        
         
     }
     
@@ -435,13 +433,30 @@ extension EntityDetailController {
     }
 
     func initializeUI() {
+        
+        //Nav Bar title & back bar formatting:
+        if let entity = self.allEntities {
+            let font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+            let attributes: [NSAttributedString.Key: Any] = [  .font: font,
+                                                               .foregroundColor: UIColor.white]
+            self.navigationController?.navigationBar.titleTextAttributes = attributes
+            self.title = entity.titleForNavigationBar()
+        }
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+
+        
+        //Name field formatting:
+        mainRowFields[0].adjustsFontSizeToFitWidth = true
+        
+        //Button Formatting:
         shortestButton.titleLabel?.adjustsFontSizeToFitWidth = true
         shortestButton.layer.borderWidth = 1
         shortestButton.layer.borderColor = UIColor.darkGray.cgColor
         longestButton.titleLabel?.adjustsFontSizeToFitWidth = true
         longestButton.layer.borderWidth = 1
         longestButton.layer.borderColor = UIColor.darkGray.cgColor
-        mainRowFields[0].adjustsFontSizeToFitWidth = true
+        
     }
     
 }

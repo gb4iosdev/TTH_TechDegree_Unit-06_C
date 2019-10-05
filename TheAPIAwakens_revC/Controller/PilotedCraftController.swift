@@ -34,6 +34,8 @@ class PilotedCraftController: UITableViewController {
             return
         }
         
+        initializeUI()
+        
         if character.hasAlreadyFetchedCraft() {
             sectionData[0] = detail.vehicleNames ?? []
             sectionData[1] = detail.starshipNames ?? []
@@ -52,6 +54,17 @@ class PilotedCraftController: UITableViewController {
 //        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
 //        client.session.invalidateAndCancel()
 //    }
+    
+    func initializeUI() {
+        //Nav Bar title formatting:
+        if let character = self.character {
+            let font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+            let attributes: [NSAttributedString.Key: Any] = [  .font: font,
+                                                               .foregroundColor: UIColor.white]
+            self.navigationController?.navigationBar.titleTextAttributes = attributes
+            self.title = character.name
+        }
+    }
 }
 
 //MARK: - Tableview datasource & delegate methods

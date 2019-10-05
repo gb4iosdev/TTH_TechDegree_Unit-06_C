@@ -8,8 +8,17 @@
 
 import Foundation
 
+//Note - raw value used for segue matching!
 enum AllEntities: String {
     case characters
     case vehicles
     case starships
+    
+    func titleForNavigationBar() -> String {
+        switch self {
+        case .characters:  return "Characters"
+        case .vehicles: return "Vehicles"
+        case .starships: return "Starships"
+        }
+    }
 }

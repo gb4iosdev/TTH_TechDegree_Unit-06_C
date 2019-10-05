@@ -27,17 +27,13 @@ extension StarshipViewModel {
     init?(from starship: Starship) {
         
         name = starship.name
-        if let length = starship.length {
-            self.row3 = String(length) + "m"  //Need Conversion here
-        } else {
-            self.row3 = "Unknown"
-        }
+        self.row3 = MeasureFormatter.formatLength(starship.length)
         
         if let detail = starship.detail {
             self.row1 = detail.make
             self.row4 = detail.craftClass
             self.row5 = detail.crewCapacity
-            self.row2 = detail.cost
+            self.row2 = MeasureFormatter.formatCost(detail.cost)
         } else {
             return nil
         }

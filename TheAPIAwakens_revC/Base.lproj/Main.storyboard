@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Start Screen Controller-->
+        <!-- -->
         <scene sceneID="qdm-Ip-inH">
             <objects>
                 <tableViewController id="ScD-QX-wjV" customClass="StartScreenController" customModule="TheAPIAwakens_revC" customModuleProvider="target" sceneMemberID="viewController">
@@ -130,7 +130,7 @@
                             <outlet property="delegate" destination="ScD-QX-wjV" id="Nf5-yU-kjU"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="LfZ-YO-QLs"/>
+                    <navigationItem key="navigationItem" title=" " id="LfZ-YO-QLs"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OhP-Dk-L0h" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -574,7 +574,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="vtX-gT-R01">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" red="0.49546158309999999" green="0.8449402452" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="0.93740326169999999" green="0.92513066529999999" blue="0.94564527269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

@@ -11,14 +11,17 @@ import Foundation
 struct VehicleDetail: Codable {
     
     let make: String
-    let cost: String
+    private let costString: String
+    var cost: Int? {
+        return Int(costString)
+    }
     let craftClass: String
     let crewCapacity: String
     let craftType: CraftType = .vehicle
     
     enum CodingKeys: String, CodingKey {
         case make = "model"
-        case cost = "cost_in_credits"
+        case costString = "cost_in_credits"
         case craftClass = "vehicle_class"
         case crewCapacity = "crew"
     }

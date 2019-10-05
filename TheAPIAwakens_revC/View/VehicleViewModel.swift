@@ -25,17 +25,13 @@ extension VehicleViewModel {
     init?(from vehicle: Vehicle) {
         
         name = vehicle.name
-        if let length = vehicle.length {
-            self.row3 = String(length) + "m"  //Need Conversion here
-        } else {
-            self.row3 = "Unknown"
-        }
+        self.row3 = MeasureFormatter.formatLength(vehicle.length)
         
         if let detail = vehicle.detail {
             self.row1 = detail.make
             self.row4 = detail.craftClass
             self.row5 = detail.crewCapacity
-            self.row2 = detail.cost
+            self.row2 = MeasureFormatter.formatCost(detail.cost)
         } else {
             return nil
         }
