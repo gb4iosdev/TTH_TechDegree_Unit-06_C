@@ -9,12 +9,21 @@
 import UIKit
 
 class StartScreenController: UITableViewController {
+    
+    var rowHeightCalculation: CGFloat = 0.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
+        //Calculate height for rows
+        let tableHeight = (tableView.bounds.height)
+        
+        let window = UIApplication.shared.keyWindow
+        let topPadding = window?.safeAreaInsets.top
+        let bottomPadding = window?.safeAreaInsets.bottom
+        rowHeightCalculation = (tableHeight - topPadding! - bottomPadding!-40)/3
     }
 
 }
@@ -30,6 +39,11 @@ extension StartScreenController {
     
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        return rowHeightCalculation
     }
 }
 

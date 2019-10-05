@@ -236,10 +236,13 @@ extension EntityDetailController {
         //Ensure character detail is available:
         guard var detail = character.detail else { return }
         
+        var character = character
+        
         client.getStarWarsData(from: detail.homeworldURL, toType: Planet.self) { [unowned self] planetDetail, error in
             if let planetDetail = planetDetail {
                 detail.home = planetDetail.name
                 //Write back to the allEntities static array
+                character.detail = detail
                 People.allEntities[index] = character
                 if let viewModel = CharacterViewModel(from: character) {
                     self.setFieldValues(using: viewModel)
@@ -267,6 +270,7 @@ extension EntityDetailController {
                     if let characterDetail = characterDetail {
                         character.detail = characterDetail
                         //Fetch homeworld name:
+                        print("Fetching homeworld name")
                         self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
                     } else {
                         print("Network call didn't work:\(error)")
@@ -426,6 +430,12 @@ extension EntityDetailController {
         if let characterViewModel = viewModel as? CharacterViewModel {
             if characterViewModel.hasPilotedCraft {
                 pilotsCell.accessoryType = .disclosureIndicator
+                pilotsCell.isUserInteractionEnabled = true
+                pilotsLabel.alpha = 1.0
+            } else {
+                pilotsCell.accessoryType = .none
+                pilotsCell.isUserInteractionEnabled = false
+                pilotsLabel.alpha = 0.5
             }
         }
         

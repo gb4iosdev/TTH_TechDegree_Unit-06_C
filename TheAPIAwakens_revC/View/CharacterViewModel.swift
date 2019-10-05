@@ -36,6 +36,7 @@ extension CharacterViewModel {
             self.row1 = detail.birthYear
             self.row4 = detail.eyeColour
             self.row5 = detail.hairColour
+            print("View model val for home is \(detail.home)")
             self.row2 = detail.home ?? ""
             self.hasPilotedCraft = detail.vehiclesPiloted.count > 0 || detail.starshipsPiloted.count > 0
             
