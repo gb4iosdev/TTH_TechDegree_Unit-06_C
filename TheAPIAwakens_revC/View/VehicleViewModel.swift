@@ -22,14 +22,14 @@ struct VehicleViewModel: EntityViewModel {
 
 extension VehicleViewModel {
     
-    init?(from vehicle: Vehicle) {
+    init?(from vehicle: Vehicle, with measureType: MeasureType) {
         
         name = vehicle.name
-        self.row3 = MeasureFormatter.formatLength(vehicle.length)
+        self.row3 = MeasureFormatter.formatLength(vehicle.length, measureType: measureType)
         
         if let detail = vehicle.detail {
             self.row1 = detail.make
-            self.row4 = detail.craftClass
+            self.row4 = detail.craftClass.capitalized
             self.row5 = detail.crewCapacity
             self.row2 = MeasureFormatter.formatCost(detail.cost)
         } else {

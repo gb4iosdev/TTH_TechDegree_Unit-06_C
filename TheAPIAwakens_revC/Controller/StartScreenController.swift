@@ -18,12 +18,7 @@ class StartScreenController: UITableViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         //Calculate height for rows
-        let tableHeight = (tableView.bounds.height)
-        
-        let window = UIApplication.shared.keyWindow
-        let topPadding = window?.safeAreaInsets.top
-        let bottomPadding = window?.safeAreaInsets.bottom
-        rowHeightCalculation = (tableHeight - topPadding! - bottomPadding!-40)/3
+        rowHeightCalculation = heightForStaticCells()
     }
 
 }
@@ -42,12 +37,11 @@ extension StartScreenController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
         return rowHeightCalculation
     }
 }
 
-
+//MARK: Navigation
 extension StartScreenController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -61,4 +55,17 @@ extension StartScreenController {
         }
     }
     
+}
+
+//MARK: Helper Methods
+extension StartScreenController  {
+    
+    func heightForStaticCells() -> CGFloat {
+        let tableHeight = (tableView.bounds.height)
+        
+        let window = UIApplication.shared.keyWindow
+        let topPadding = window?.safeAreaInsets.top
+        let bottomPadding = window?.safeAreaInsets.bottom
+        return (tableHeight - topPadding! - bottomPadding!-40)/3
+    }
 }

@@ -12,6 +12,12 @@ class EntityDetailController: UITableViewController {
     
     var allEntities: AllEntities?
     let client = StarWarsAPIClient()
+    var entityPickerRowHeightCalculation: CGFloat = 0.0
+    var measureType: MeasureType = .metric {
+        didSet {
+            conversionUpdate()
+        }
+    }
 
     //Outlet variables
     
@@ -19,6 +25,11 @@ class EntityDetailController: UITableViewController {
     
     @IBOutlet var mainRowLabels: [UILabel]!
     @IBOutlet var mainRowFields: [UILabel]!
+    @IBOutlet weak var usdButton: UIButton!
+    @IBOutlet weak var creditsButton: UIButton!
+    
+    @IBOutlet weak var imperialButton: UIButton!
+    @IBOutlet weak var metricButton: UIButton!
     
     @IBOutlet weak var pilotsCell: UITableViewCell!
     @IBOutlet weak var pilotsLabel: UILabel!
@@ -41,7 +52,6 @@ class EntityDetailController: UITableViewController {
         //Set Pickerview data source and delegate
         entityPicker.delegate = self
         entityPicker.dataSource = self
-
         
         initializeUI()
         setFieldLabels()
@@ -73,7 +83,6 @@ class EntityDetailController: UITableViewController {
         
     }
     
-    
     @IBAction func longestButtonPressed(_ sender: UIButton) {
         
         guard let entities = self.allEntities else { return }
@@ -97,6 +106,22 @@ class EntityDetailController: UITableViewController {
         }
     }
     
+    @IBAction func imperialButtonPressed(_ sender: UIButton) {
+        measureType = .imperial
+        imperialButton.setTitleColor(.lightGray, for: .normal)
+        metricButton.setTitleColor(.white, for: .normal)
+        imperialButton.isUserInteractionEnabled = false
+        metricButton.isUserInteractionEnabled = true
+    }
+    
+    @IBAction func metricButtonPressed(_ sender: Any) {
+        measureType = .metric
+        metricButton.setTitleColor(.lightGray, for: .normal)
+        imperialButton.setTitleColor(.white, for: .normal)
+        imperialButton.isUserInteractionEnabled = true
+        metricButton.isUserInteractionEnabled = false
+    }
+    
 //    override func viewWillDisappear(_ animated: Bool) {
 //        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
 //        client.session.invalidateAndCancel()
@@ -115,6 +140,14 @@ extension EntityDetailController {
     
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.section {
+        case 1: return entityPickerRowHeightCalculation        //Entity Picker
+        case 2: return 100.0        //Footer buttons
+        default: return 45          //Top Data rows
+        }
     }
 }
 
@@ -151,11 +184,8 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        print("Picker picked")
         setFieldValues(for: row)
     }
-    
-    
 }
 
 //MARK: - Helper Methods - Networking
@@ -244,7 +274,7 @@ extension EntityDetailController {
                 //Write back to the allEntities static array
                 character.detail = detail
                 People.allEntities[index] = character
-                if let viewModel = CharacterViewModel(from: character) {
+                if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
                     self.setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
@@ -278,7 +308,7 @@ extension EntityDetailController {
                 }
             } else {    //Data exists - simply load
                 print("Data already exists for \(character.name) - no need for network call")
-                if let viewModel = CharacterViewModel(from: character) {
+                if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
                     setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
@@ -296,7 +326,7 @@ extension EntityDetailController {
                         vehicle.detail = vehicleDetail
                         //Write back to the allEntities static array
                         Vehicles.allEntities[pickerRowNumber] = vehicle
-                        if let viewModel = VehicleViewModel(from: vehicle) {
+                        if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType) {
                             self.setFieldValues(using: viewModel)
                         } else {
                             print("Error: Could not create view model")
@@ -307,7 +337,7 @@ extension EntityDetailController {
                 }
             } else {    //Data exists - simply load
                 print("Data already exists for \(vehicle.name) - no need for network call")
-                if let viewModel = VehicleViewModel(from: vehicle) {
+                if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType) {
                     setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
@@ -324,7 +354,7 @@ extension EntityDetailController {
                         starship.detail = starshipDetail
                         //Write back to the allEntities static array
                         Starships.allEntities[pickerRowNumber] = starship
-                        if let viewModel = StarshipViewModel(from: starship) {
+                        if let viewModel = StarshipViewModel(from: starship, with: self.measureType) {
                             self.setFieldValues(using: viewModel)
                         } else {
                             print("Error: Could not create view model")
@@ -335,7 +365,7 @@ extension EntityDetailController {
                 }
             } else {    //Data exists - simply load
                 print("Data already exists for \(starship.name) - no need for network call")
-                if let viewModel = StarshipViewModel(from: starship) {
+                if let viewModel = StarshipViewModel(from: starship, with: self.measureType) {
                     setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
@@ -444,6 +474,14 @@ extension EntityDetailController {
 
     func initializeUI() {
         
+        //entityPicker Height Calculation
+        let tableHeight = (tableView.bounds.height)
+        
+        let window = UIApplication.shared.keyWindow
+        if let topPadding = window?.safeAreaInsets.top, let bottomPadding = window?.safeAreaInsets.bottom {
+            entityPickerRowHeightCalculation = tableHeight - topPadding - bottomPadding - 510.0 - 40.0      //510 is sum of other row heights, 40 padding.
+        }
+        
         //Nav Bar title & back bar formatting:
         if let entity = self.allEntities {
             let font = UIFont.systemFont(ofSize: 24, weight: .semibold)
@@ -456,7 +494,8 @@ extension EntityDetailController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
         
-        //Name field formatting:
+        //Font size formatting - to fit label or field:
+        headerLabel.adjustsFontSizeToFitWidth = true
         mainRowFields[0].adjustsFontSizeToFitWidth = true
         
         //Button Formatting:
@@ -466,7 +505,29 @@ extension EntityDetailController {
         longestButton.titleLabel?.adjustsFontSizeToFitWidth = true
         longestButton.layer.borderWidth = 1
         longestButton.layer.borderColor = UIColor.darkGray.cgColor
+    }
+    
+    func conversionUpdate() {
         
+        guard let entityType = self.allEntities else { return }
+        
+        switch entityType {
+        case .characters:
+            let character = People.allEntities[entityPicker.selectedRow(inComponent: 0)]
+            if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
+                setFieldValues(using: viewModel)
+            }
+        case .vehicles:
+            let vehicle = Vehicles.allEntities[entityPicker.selectedRow(inComponent: 0)]
+            if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType) {
+                setFieldValues(using: viewModel)
+            }
+        case .starships:
+            let starship = Starships.allEntities[entityPicker.selectedRow(inComponent: 0)]
+            if let viewModel = StarshipViewModel(from: starship, with: self.measureType) {
+                setFieldValues(using: viewModel)
+            }
+        }
     }
     
 }

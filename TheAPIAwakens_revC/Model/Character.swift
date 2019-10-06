@@ -13,7 +13,11 @@ struct Character: Codable {
     let url: URL
     private let heightString: String
     var height: Double? {
-        return Double(heightString)
+        if let height = Double(heightString) {
+            return Double(height)/100.0
+        } else {
+            return nil
+        }
     }
     
     var detail: CharacterDetail?

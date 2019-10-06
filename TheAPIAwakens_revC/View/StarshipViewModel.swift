@@ -24,14 +24,14 @@ struct StarshipViewModel: EntityViewModel {
 
 extension StarshipViewModel {
     
-    init?(from starship: Starship) {
+    init?(from starship: Starship, with measuretype: MeasureType) {
         
         name = starship.name
-        self.row3 = MeasureFormatter.formatLength(starship.length)
+        self.row3 = MeasureFormatter.formatLength(starship.length, measureType: measuretype)
         
         if let detail = starship.detail {
             self.row1 = detail.make
-            self.row4 = detail.craftClass
+            self.row4 = detail.craftClass.capitalized
             self.row5 = detail.crewCapacity
             self.row2 = MeasureFormatter.formatCost(detail.cost)
         } else {

@@ -23,20 +23,16 @@ struct CharacterViewModel: EntityViewModel {
 
 extension CharacterViewModel {
     
-    init?(from character: Character) {
+    init?(from character: Character, with measureType: MeasureType) {
         
         name = character.name
-        if let height = character.height {
-            self.row3 = String(height/100) + "m"  //Need Conversion here
-        } else {
-            self.row3 = "Unknown"
-        }
         
+        self.row3 = MeasureFormatter.formatLength(character.height, measureType: measureType)
+
         if let detail = character.detail {
             self.row1 = detail.birthYear
             self.row4 = detail.eyeColour
             self.row5 = detail.hairColour
-            print("View model val for home is \(detail.home)")
             self.row2 = detail.home ?? ""
             self.hasPilotedCraft = detail.vehiclesPiloted.count > 0 || detail.starshipsPiloted.count > 0
             
