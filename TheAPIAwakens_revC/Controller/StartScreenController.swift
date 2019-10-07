@@ -10,11 +10,13 @@ import UIKit
 
 class StartScreenController: UITableViewController {
     
+    //Store the calculated height for static cells, to allow for quick retrieval in height for row at indexPath.
     var rowHeightCalculation: CGFloat = 0.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //Remove the default 'Back' title from the Navigation Bar
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         //Calculate height for rows
@@ -37,7 +39,7 @@ extension StartScreenController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return rowHeightCalculation
+        return rowHeightCalculation     //Sets height for all cells.
     }
 }
 
@@ -46,7 +48,7 @@ extension StartScreenController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        //Get the destination view controller - only if the right type
+        //Get the destination view controller - only if the right type (EntityDetailController)
         guard let detailController = segue.destination as? EntityDetailController else { return }
         
         //set the type of entities to load
@@ -66,6 +68,6 @@ extension StartScreenController  {
         let window = UIApplication.shared.keyWindow
         let topPadding = window?.safeAreaInsets.top
         let bottomPadding = window?.safeAreaInsets.bottom
-        return (tableHeight - topPadding! - bottomPadding!-40)/3
+        return (tableHeight - topPadding! - bottomPadding!-40)/3    //-40 to allow room for the home indicator.
     }
 }

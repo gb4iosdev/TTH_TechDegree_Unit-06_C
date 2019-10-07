@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Single vehicle header information.  Enough to populate the picker and enable longest/shortest length determination.
 struct Vehicle: Codable {
     
     let name: String
@@ -17,6 +18,7 @@ struct Vehicle: Codable {
         return Double(lengthString)
     }
     
+    //Populated via separate network call if vehicle is picked in the picker for detailed display.
     var detail: VehicleDetail?
     
     enum CodingKeys: String, CodingKey {

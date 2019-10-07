@@ -10,53 +10,46 @@ import UIKit
 
 class PilotedCraftController: UITableViewController {
     
-    let client = StarWarsAPIClient()
-    var character: Character?
-    var pickerIndex: Int?                   //For writing the data back to the People static array
+    let client = StarWarsAPIClient()        //Networking
+    var character: Character?               //Characted selected in previous table view
     
+    //Network calls dispatched all at once.  Need to track when final call has completed
     var allExpectedFetches: Int?
     var allActualFetches = 0
     
-    var sectionData = [["<None Piloted>"], ["<None Piloted>"]]
+    var sectionData = [[""], [""]]
     let sectionTitles = ["Vehicles", "Starships"]
+    //Use icon images for section headers
     let sectionImage: [UIImage] = [UIImage(named: "icon-vehicles")!, UIImage(named: "icon-starships")!]
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("Character is:\(character)")
-        print("Character detail is:\(character?.detail)")
-        print("pickerIndex is:\(pickerIndex)")
-        
-        guard let character = character, let detail = character.detail, let pickerIndex = pickerIndex else {
+        //At a minimum need a character and it's detail to be popuolated to proceed
+        guard let character = character, let detail = character.detail else {
             print("Error:  Character not loaded")
             return
         }
         
-        initializeUI()
+        initializeUI()      //Show character's name in nav bar title
         
-        if character.hasAlreadyFetchedCraft() {
+        if character.hasAlreadyFetchedCraft() {         //Prevent un-needed network re-fetch.
             sectionData[0] = detail.vehicleNames ?? []
             sectionData[1] = detail.starshipNames ?? []
         } else {          //Need a network call
+            //Calculate the expected number of fetches
             self.allExpectedFetches = detail.vehiclesPiloted.count + detail.starshipsPiloted.count
-            print(detail.vehiclesPiloted)
-            print(detail.starshipsPiloted)
+            //Network calls:
             fetchCraftForCharacter(using: detail.vehiclesPiloted, for: CraftType.vehicle)
             fetchCraftForCharacter(using: detail.starshipsPiloted, for: CraftType.starship)
         }
         
         
     }
-
-//    override func viewWillDisappear(_ animated: Bool) {
-//        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
-//        client.session.invalidateAndCancel()
-//    }
     
     func initializeUI() {
-        //Nav Bar title formatting:
+        //Nav Bar title formatting.  Show character's name in nav bar title
         if let character = self.character {
             let font = UIFont.systemFont(ofSize: 24, weight: .semibold)
             let attributes: [NSAttributedString.Key: Any] = [  .font: font,
@@ -82,28 +75,25 @@ extension PilotedCraftController {
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
     }
-    
-//    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        return sectionTitles[section]
-//    }
 
+    //Based on the section being demanded, populate the label & and image, add to view, return the view for the section.
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
         view.backgroundColor = .black
         
+        //Add the image view:
         let imageView = UIImageView(image: sectionImage[section])
         imageView.frame = CGRect(x: 5, y: 5, width: 35, height: 35)
         view.addSubview(imageView)
         
+        //Setup attributed text parameters
         let text = sectionTitles[section]
         let font = UIFont.systemFont(ofSize: 24, weight: .semibold)
         let attributes: [NSAttributedString.Key: Any] = [  .font: font,
-                                                           .foregroundColor: UIColor(red:0.49, green:0.84, blue:1.00, alpha:1.0)
-            
-        ]
+                                                           .foregroundColor: UIColor(red:0.49, green:0.84, blue:1.00, alpha:1.0)]
         let attributedText = NSAttributedString(string: text, attributes: attributes)
         
-        
+        //Create label, assign attributed text, add to view.
         let label = UILabel()
         label.attributedText = attributedText
         label.frame = CGRect(x: 45, y: 5, width: 200, height: 35)
@@ -117,9 +107,13 @@ extension PilotedCraftController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "craftsPiloted")
-        cell!.textLabel!.text = sectionData[indexPath.section][indexPath.row]
-        return cell!
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "craftsPiloted"), let textLabel = cell.textLabel {
+            textLabel.text = sectionData[indexPath.section][indexPath.row]
+            return cell
+        } else {
+            print("Error: failed to generate custom Crafts Piloted cell")
+            return UITableViewCell()
+        }
     }
     
     
@@ -128,9 +122,9 @@ extension PilotedCraftController {
 //MARK: - Networking
 extension PilotedCraftController {
     
-    //Write a function that takes an array of URL's and makes network calls to populate an array of results (names) and knows when it has finished.
-    //Use this for the exceeds requirement - to populate the assocated vehicles and starships.
+    //Function takes an array of URL's and makes network calls to populate an array of results (names) and determines when it has finished.
     func fetchCraftForCharacter(using urls: [URL], for craftType: CraftType) {
+        //If there are no URLs, populate some data indicating no crafts are piloted.
         guard urls.count >= 1 else {
             switch  craftType {
             case .vehicle:
@@ -141,18 +135,22 @@ extension PilotedCraftController {
             return
         }
         
+        //Set fetch tracking variables
         let requiredFetches = urls.count
         var numberOfFetches = 0
         var nameArray: [String] = []
         
         for url in urls {
-            client.getStarWarsData(from: url, toType: VehicleHeader.self) { [unowned self] vehicleHeader, error in
-                if let vehicleHeader = vehicleHeader {
+            client.getStarWarsData(from: url, toType: EntityName.self) { [unowned self] entity, error in
+                if let entity = entity {
+                    //Increment local & global fetches counters
                     numberOfFetches += 1
                     self.allActualFetches += 1
-                    nameArray.append(vehicleHeader.name)
+                    //Append name to local array
+                    nameArray.append(entity.name)
+                    //Check if this was the last fetch for this craft type:
                     if numberOfFetches == requiredFetches {
-                        //Save this array to the class variable:
+                        //Save this array to the class variable for later tableview retrieval:
                         switch  craftType {
                         case .vehicle:
                             self.sectionData[0] = nameArray
@@ -165,7 +163,7 @@ extension PilotedCraftController {
                         }
                     }
                 } else {
-                    print("didn't work:\(error)")
+                    print("Error: Fetch results could not be cast to type:\(String(describing: error))")
                 }
             }
         }

@@ -10,10 +10,6 @@ import Foundation
 
 class StarWarsAPIClient {
     
-//    lazy var starWarsBaseURL: URL = {
-//        return URL(string: "https://swapi.co/api/")!
-//    }()
-    
     let decoder = JSONDecoder()
     
     let session: URLSession
@@ -47,14 +43,14 @@ class StarWarsAPIClient {
                             let entity = try self.decoder.decode(type, from: data)
                             completion(entity, nil)
                             
-                        } catch let error {
-                            completion(nil, error)
+                        } catch {
+                            completion(nil, StarWarsAPIError.jsonParsingFailure)
                         }
                     } else {
-                        completion(nil, StarWarsAPIError.invalidData)
+                        completion(nil, StarWarsAPIError.responseUnsuccessful(statusCode: httpResponse.statusCode))
                     }
                 } else if let error = error {
-                    completion(nil, error)
+                    completion(nil, StarWarsAPIError.noDataReturnedFromDataTask(detail: error.localizedDescription))
                 }
             }
         }

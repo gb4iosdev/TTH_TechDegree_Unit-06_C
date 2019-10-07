@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Used to map between model object and UI
 struct VehicleViewModel: EntityViewModel {
     
     let name: String
@@ -22,7 +23,8 @@ struct VehicleViewModel: EntityViewModel {
 
 extension VehicleViewModel {
     
-    init?(from vehicle: Vehicle, with measureType: MeasureType) {
+    //Failable initializer to convert from model object to view model
+    init?(from vehicle: Vehicle, with measureType: MeasureType, in currency: Currency) {
         
         name = vehicle.name
         self.row3 = MeasureFormatter.formatLength(vehicle.length, measureType: measureType)
@@ -31,7 +33,7 @@ extension VehicleViewModel {
             self.row1 = detail.make
             self.row4 = detail.craftClass.capitalized
             self.row5 = detail.crewCapacity
-            self.row2 = MeasureFormatter.formatCost(detail.cost)
+            self.row2 = MeasureFormatter.formatCost(detail.cost, in: currency)
         } else {
             return nil
         }

@@ -10,7 +10,7 @@ import Foundation
 
 struct CharacterDetail: Codable {
     
-    //Straigh JSON fills:
+    //Straight JSON fills from coding keys:
     let birthYear: String
     let homeworldURL: URL
     let eyeColour: String

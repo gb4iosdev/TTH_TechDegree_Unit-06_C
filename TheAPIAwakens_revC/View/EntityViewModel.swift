@@ -8,6 +8,7 @@
 
 import Foundation
 
+//View Model parameters common to all.
 protocol EntityViewModel {
     
     var name: String { get }

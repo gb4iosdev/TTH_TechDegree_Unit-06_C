@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Error types for network calls to Star Wars API
 enum StarWarsAPIError: Error {
     
     case requestFailed
@@ -15,4 +16,5 @@ enum StarWarsAPIError: Error {
     case invalidData
     case jsonParsingFailure
     case invalidURL
+    case noDataReturnedFromDataTask(detail: String)
 }

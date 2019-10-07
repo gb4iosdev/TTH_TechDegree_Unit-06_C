@@ -10,6 +10,7 @@ import Foundation
 
 import Foundation
 
+//Used to map between model object and UI
 struct StarshipViewModel: EntityViewModel {
     
     let name: String
@@ -24,7 +25,8 @@ struct StarshipViewModel: EntityViewModel {
 
 extension StarshipViewModel {
     
-    init?(from starship: Starship, with measuretype: MeasureType) {
+    //Failable initializer to convert from model object to view model
+    init?(from starship: Starship, with measuretype: MeasureType, in currency: Currency) {
         
         name = starship.name
         self.row3 = MeasureFormatter.formatLength(starship.length, measureType: measuretype)
@@ -33,7 +35,7 @@ extension StarshipViewModel {
             self.row1 = detail.make
             self.row4 = detail.craftClass.capitalized
             self.row5 = detail.crewCapacity
-            self.row2 = MeasureFormatter.formatCost(detail.cost)
+            self.row2 = MeasureFormatter.formatCost(detail.cost, in: currency)
         } else {
             return nil
         }

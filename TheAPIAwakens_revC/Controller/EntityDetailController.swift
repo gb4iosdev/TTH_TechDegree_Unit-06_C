@@ -10,10 +10,15 @@ import UIKit
 
 class EntityDetailController: UITableViewController {
     
-    var allEntities: AllEntities?
-    let client = StarWarsAPIClient()
-    var entityPickerRowHeightCalculation: CGFloat = 0.0
-    var measureType: MeasureType = .metric {
+    var allEntities: AllEntities?                           //Type of entities being displayed - People, Vehicles, or Starships
+    let client = StarWarsAPIClient()                        //Networking
+    var entityPickerRowHeightCalculation: CGFloat = 0.0     //Picker is set to remaining height after allowing for all other cells & views.
+    var measureType: MeasureType = .metric {                //Metric/Imperial
+        didSet {
+            conversionUpdate()
+        }
+    }
+    var currencyType: Currency = .credits {                 //USD/Credits
         didSet {
             conversionUpdate()
         }
@@ -23,8 +28,8 @@ class EntityDetailController: UITableViewController {
     
     @IBOutlet weak var headerLabel: UILabel!
     
-    @IBOutlet var mainRowLabels: [UILabel]!
-    @IBOutlet var mainRowFields: [UILabel]!
+    @IBOutlet var mainRowLabels: [UILabel]!             //Starts from the 'Born' label
+    @IBOutlet var mainRowFields: [UILabel]!             //Starts from the 'Born' field.
     @IBOutlet weak var usdButton: UIButton!
     @IBOutlet weak var creditsButton: UIButton!
     
@@ -54,11 +59,17 @@ class EntityDetailController: UITableViewController {
         entityPicker.dataSource = self
         
         initializeUI()
+        
+        //Customize labels, buttons etc in accordance with selected entities being displayed.
         setFieldLabels()
+        
+        //Perform network fetch if required, otherwize just load from existing array.
         fetchEntities(entitiesToLoad: entitiesToLoad)
         
     }
     
+    //Retrieve shortest entity index from the static datasource,
+    //Automate picker selection based on shortest button press - then display the corresponding data.
     @IBAction func shortestButtonPressed(_ sender: Any) {
         
         guard let entities = self.allEntities else { return }
@@ -83,6 +94,8 @@ class EntityDetailController: UITableViewController {
         
     }
     
+    //Retrieve longest entity index from the static datasource,
+    //Automate picker selection based on shortest button press - then display the corresponding data.
     @IBAction func longestButtonPressed(_ sender: UIButton) {
         
         guard let entities = self.allEntities else { return }
@@ -106,6 +119,7 @@ class EntityDetailController: UITableViewController {
         }
     }
     
+    //Set the measure type, control button behaviour.
     @IBAction func imperialButtonPressed(_ sender: UIButton) {
         measureType = .imperial
         imperialButton.setTitleColor(.lightGray, for: .normal)
@@ -114,6 +128,7 @@ class EntityDetailController: UITableViewController {
         metricButton.isUserInteractionEnabled = true
     }
     
+    //Set the measure type, control button behaviour.
     @IBAction func metricButtonPressed(_ sender: Any) {
         measureType = .metric
         metricButton.setTitleColor(.lightGray, for: .normal)
@@ -122,14 +137,30 @@ class EntityDetailController: UITableViewController {
         metricButton.isUserInteractionEnabled = false
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        //Need to cancel the network request if the user navigates off this ViewController before the network call is finished.
-//        client.session.invalidateAndCancel()
-//    }
+    //Set the currency type, control button behaviour.
+    @IBAction func usdButtonPressed(_ sender: UIButton) {
+        currencyType = .usd
+        usdButton.setTitleColor(.lightGray, for: .normal)
+        creditsButton.setTitleColor(.white, for: .normal)
+        usdButton.isUserInteractionEnabled = false
+        creditsButton.isUserInteractionEnabled = true
+        
+    }
+    
+    //Set the currency type, control button behaviour.
+    @IBAction func creditButtonPressed(_ sender: UIButton) {
+        currencyType = .credits
+        usdButton.setTitleColor(.white, for: .normal)
+        creditsButton.setTitleColor(.lightGray, for: .normal)
+        usdButton.isUserInteractionEnabled = true
+        creditsButton.isUserInteractionEnabled = false
+    }
+    
     
 }
 
-//MARK: Tableview delegation
+
+//MARK:- Tableview delegation
 
 extension EntityDetailController {
     
@@ -144,22 +175,25 @@ extension EntityDetailController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 1: return entityPickerRowHeightCalculation        //Entity Picker
-        case 2: return 100.0        //Footer buttons
-        default: return 45          //Top Data rows
+        case 1: return entityPickerRowHeightCalculation         //Entity Picker received residual height
+        case 2: return 100.0                                    //Footer view containing shortest/longest buttons
+        default: return 45                                      //Top Data rows
         }
     }
+    
+    
 }
 
 
-
-//MARK: Pickerview delegation & data source
+//MARK:- Pickerview delegation & data source
 
 extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
+    //Return the number of items in the static datasource for the associated entity
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         
         guard let entities = self.allEntities else { return 0 }
@@ -171,6 +205,7 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
         }
     }
     
+    //Return entity name to be displayed in the picker.
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
         guard let entities = self.allEntities else { return "" }
@@ -183,6 +218,7 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
         
     }
     
+    //Pass the row as index to the allEntities static datasource.
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         setFieldValues(for: row)
     }
@@ -191,6 +227,8 @@ extension EntityDetailController: UIPickerViewDelegate, UIPickerViewDataSource {
 //MARK: - Helper Methods - Networking
 extension EntityDetailController {
     
+    //Deterimine if the list of all entities has already been fetched.  If so, just reload the picker.
+    //If not, execute the network call.
     func fetchEntities(entitiesToLoad allEntities: AllEntities) {
         
         switch allEntities {
@@ -219,6 +257,8 @@ extension EntityDetailController {
         
     }
     
+    //Execute the network call to retrieve all entities.  Cycle through pages until no further pages are found.
+    //Load datasource static array as pages of entities are fetched.
     func retrieveAllEntities<T: Codable>(using thisURL: URL?, toType type: T.Type) {
         
         var nextURL: URL?
@@ -243,24 +283,27 @@ extension EntityDetailController {
                     //Check if there is a next page, and that it can be created into an URL.  If so, call this method again.
                     if let nextURL = nextURL {
                         self.retrieveAllEntities(using: nextURL, toType: type)
-                    } else {        //Final page and allEntity static arrays are loaded.  Reload the picker.
-                        if let allEntities = entities as? People {
+                    } else {        //Final page and allEntity static arrays are loaded.  Sort the entities by name & determine longest & shortest.
+                        if let _ = entities as? People {
                             People.configure()
                         }
-                        else if let allEntities = entities as? Vehicles { Vehicles.configure()
-                        } else if let allEntities = entities as? Starships {
+                        else if let _ = entities as? Vehicles {
+                            Vehicles.configure()
+                        } else if let _ = entities as? Starships {
                             Starships.configure()
                         }
+                        //Reload the picker & update the fields.
                         self.entityPicker.reloadAllComponents()
                         self.updateUI()
                     }
                 } else {
-                    print("Error in retrieveStarWarsPage is: \(error)")     ///Create an alert here??
+                    print("Error: in retrieveStarWarsPage is: \(String(describing: error))")
                 }
             }
         }
     }
     
+    //Performed after retrieving the main detail for the character (which contains the homeworld URL), and before updating the UI.
     func fetchCharacterHomeworld(for character: Character, withPeopleIndex index: Int) {
         
         //Ensure character detail is available:
@@ -268,46 +311,45 @@ extension EntityDetailController {
         
         var character = character
         
-        client.getStarWarsData(from: detail.homeworldURL, toType: Planet.self) { [unowned self] planetDetail, error in
+        client.getStarWarsData(from: detail.homeworldURL, toType: EntityName.self) { [unowned self] planetDetail, error in
             if let planetDetail = planetDetail {
                 detail.home = planetDetail.name
                 //Write back to the allEntities static array
                 character.detail = detail
                 People.allEntities[index] = character
+                //Regenerate the view model and display
                 if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
                     self.setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
                 }
             } else {
-                print("Error: Network call didn't work:\(error)")
+                print("Error: Fetch results could not be cast to type:\(String(describing: error))")
             }
         }
     }
     
-    //Fetch entity values based on entity picked
+    //Fetch single entity values based on entity picked.  Populate entity 'detail' variable with the results.
     func setFieldValues(for pickerRowNumber: Int) {
         
         guard let entities = self.allEntities else { return }
         
-        
         switch entities {
         case .characters:
+            //Get the picked character from the datasource
             var character = People.allEntities[pickerRowNumber]
             //Check to see if the character detail is missing
             if character.detail == nil {
                 client.getStarWarsData(from: character.url, toType: CharacterDetail.self) { [unowned self] characterDetail, error in
                     if let characterDetail = characterDetail {
                         character.detail = characterDetail
-                        //Fetch homeworld name:
-                        print("Fetching homeworld name")
+                        //Fetch homeworld name & update UI
                         self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
                     } else {
-                        print("Network call didn't work:\(error)")
+                        print("Error: Fetch results could not be cast to type:\(String(describing: error))")
                     }
                 }
             } else {    //Data exists - simply load
-                print("Data already exists for \(character.name) - no need for network call")
                 if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
                     setFieldValues(using: viewModel)
                 } else {
@@ -317,6 +359,7 @@ extension EntityDetailController {
             
             
         case .vehicles:
+            //Get the picked vehicle from the datasource
             var vehicle = Vehicles.allEntities[pickerRowNumber]
             //Check to see if the vehicle detail is missing
             if vehicle.detail == nil {
@@ -326,18 +369,18 @@ extension EntityDetailController {
                         vehicle.detail = vehicleDetail
                         //Write back to the allEntities static array
                         Vehicles.allEntities[pickerRowNumber] = vehicle
-                        if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType) {
+                        //Create the view model with reference to the selected measure type and currency.
+                        if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
                             self.setFieldValues(using: viewModel)
                         } else {
                             print("Error: Could not create view model")
                         }
                     } else {
-                        print("Network call didn't work:\(error)")
+                        print("Error: Fetch results could not be cast to type:\(String(describing: error))")
                     }
                 }
             } else {    //Data exists - simply load
-                print("Data already exists for \(vehicle.name) - no need for network call")
-                if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType) {
+                if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
                     setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
@@ -345,6 +388,7 @@ extension EntityDetailController {
             }
             
         case .starships:
+            //Get the picked starship from the datasource
             var starship = Starships.allEntities[pickerRowNumber]
             //Check to see if the starship detail is missing
             if starship.detail == nil {
@@ -354,18 +398,19 @@ extension EntityDetailController {
                         starship.detail = starshipDetail
                         //Write back to the allEntities static array
                         Starships.allEntities[pickerRowNumber] = starship
-                        if let viewModel = StarshipViewModel(from: starship, with: self.measureType) {
+                        //Create the view model with reference to the selected measure type and currency.
+                        if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
                             self.setFieldValues(using: viewModel)
                         } else {
                             print("Error: Could not create view model")
                         }
                     } else {
-                        print("Network call didn't work:\(error)")
+                        print("Error: Fetch results could not be cast to type:\(String(describing: error))")
                     }
                 }
             } else {    //Data exists - simply load
                 print("Data already exists for \(starship.name) - no need for network call")
-                if let viewModel = StarshipViewModel(from: starship, with: self.measureType) {
+                if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
                     setFieldValues(using: viewModel)
                 } else {
                     print("Error: Could not create view model")
@@ -380,6 +425,7 @@ extension EntityDetailController {
 //MARK: - Helper Methods - UI
 extension EntityDetailController {
     
+    //Display shortest/Longest entities and display the values for first entity in the picker.
     func updateUI(){
         
         guard let entities = self.allEntities else { return }
@@ -405,8 +451,14 @@ extension EntityDetailController {
         
         //Set field values for the picker default row
         setFieldValues(for: 0)
+        
+        //Expose the shortest/tallest buttons
+        shortestButton.isHidden = false
+        longestButton.isHidden = false
     }
     
+    //Configure the tableview controller fields to reflect the type of entity choses in the start screen
+    //Also configure button visibility to suit.
     func setFieldLabels() {
         
         guard let entities = self.allEntities else { return }
@@ -418,8 +470,11 @@ extension EntityDetailController {
             mainRowLabels?[2].text = "Height"
             mainRowLabels?[3].text = "Eyes"
             mainRowLabels?[4].text = "Hair"
+            usdButton.isHidden = true
+            creditsButton.isHidden = true
             longestLabel.text = "Tallest"
             pilotsLabel.isHidden = false
+            
             
         case .vehicles, .starships:
             mainRowLabels?[0].text = "Make"
@@ -427,27 +482,15 @@ extension EntityDetailController {
             mainRowLabels?[2].text = " Length"
             mainRowLabels?[3].text = "Class"
             mainRowLabels?[4].text = "Crew"
+            usdButton.isHidden = false
+            creditsButton.isHidden = false
             longestLabel.text = "Longest"
             pilotsLabel.isHidden = true
             pilotsCell.accessoryType = .none
         }
     }
     
-    func showFields(setTo: Bool) {
-        
-        headerLabel.isHidden = !setTo
-        
-        for field in mainRowFields {
-            field.isHidden = !setTo
-        }
-    }
-    
-    func showLengthButtons(setTo: Bool) {
-        
-        shortestButton.isHidden = !setTo
-        longestButton.isHidden = !setTo
-    }
-    
+    //Populate the fields from the view model
     func setFieldValues(using viewModel: EntityViewModel) {
         headerLabel.text = viewModel.name
         mainRowFields[0].text = viewModel.row1
@@ -471,8 +514,28 @@ extension EntityDetailController {
         
         showFields(setTo: true)
     }
+    
+    //Helper method to expose or hide fields as required.
+    func showFields(setTo: Bool) {
+        
+        headerLabel.isHidden = !setTo
+        
+        for field in mainRowFields {
+            field.isHidden = !setTo
+        }
+    }
 
     func initializeUI() {
+        
+        //Button Formatting:
+        shortestButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        shortestButton.layer.borderWidth = 1
+        shortestButton.layer.borderColor = UIColor.darkGray.cgColor
+        shortestButton.isHidden = true
+        longestButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        longestButton.layer.borderWidth = 1
+        longestButton.layer.borderColor = UIColor.darkGray.cgColor
+        longestButton.isHidden = true
         
         //entityPicker Height Calculation
         let tableHeight = (tableView.bounds.height)
@@ -491,22 +554,17 @@ extension EntityDetailController {
             self.title = entity.titleForNavigationBar()
         }
         
+        //Remove the default 'Back' title from the Navigation Bar
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
         
         //Font size formatting - to fit label or field:
         headerLabel.adjustsFontSizeToFitWidth = true
         mainRowFields[0].adjustsFontSizeToFitWidth = true
-        
-        //Button Formatting:
-        shortestButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        shortestButton.layer.borderWidth = 1
-        shortestButton.layer.borderColor = UIColor.darkGray.cgColor
-        longestButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        longestButton.layer.borderWidth = 1
-        longestButton.layer.borderColor = UIColor.darkGray.cgColor
+        mainRowFields[3].adjustsFontSizeToFitWidth = true
     }
     
+    //Regenerate view model and display with reference to new measure and/or currency settings
     func conversionUpdate() {
         
         guard let entityType = self.allEntities else { return }
@@ -519,12 +577,12 @@ extension EntityDetailController {
             }
         case .vehicles:
             let vehicle = Vehicles.allEntities[entityPicker.selectedRow(inComponent: 0)]
-            if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType) {
+            if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
                 setFieldValues(using: viewModel)
             }
         case .starships:
             let starship = Starships.allEntities[entityPicker.selectedRow(inComponent: 0)]
-            if let viewModel = StarshipViewModel(from: starship, with: self.measureType) {
+            if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
                 setFieldValues(using: viewModel)
             }
         }
@@ -535,9 +593,9 @@ extension EntityDetailController {
 //MARK: - Segues
 extension EntityDetailController {
     
+    //Only segue from Character & with correct identifier
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        print("In should perform segue")
-        //Only segue from Character & with correct identifier
+        
         if identifier == "pilotedVehicles" && self.allEntities == .characters {
             return true
         }
@@ -552,8 +610,8 @@ extension EntityDetailController {
             return
         }
         
+        //Set the selected character on the PilotedCraft Controller to allow piloted craft detail to be retried & displayed.
         pilotedCraftController.character = People.allEntities[entityPicker.selectedRow(inComponent: 0)]
-        pilotedCraftController.pickerIndex = entityPicker.selectedRow(inComponent: 0)
     }
 }
 

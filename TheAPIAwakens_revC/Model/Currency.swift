@@ -1,5 +1,5 @@
 //
-//  MeasureType.swift
+//  CurrencyType.swift
 //  TheAPIAwakens_revC
 //
 //  Created by Gavin Butler on 06-10-2019.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-//Defines conversion & formatting in the MeasureFormatter class.
-enum MeasureType {
-    case imperial
-    case metric
+//Currency type and it's conversion from Galactic Credits
+enum Currency: Int {
+    case credits = 1
+    case usd = 4000
 }

@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Single starship header information.  Enough to populate the picker and enable longest/shortest length determination.
 struct Starship: Codable {
     
     let name: String
@@ -17,6 +18,7 @@ struct Starship: Codable {
         return Double(lengthString)
     }
     
+    //Populated via separate network call if starship is picked in the picker for detailed display.
     var detail: StarshipDetail?
     
     enum CodingKeys: String, CodingKey {

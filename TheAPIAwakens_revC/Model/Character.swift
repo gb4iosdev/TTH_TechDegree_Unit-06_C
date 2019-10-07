@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Single character header information.  Enough to populate the picker and enable tallest/shortest height determination.
 struct Character: Codable {
     let name: String
     let url: URL
@@ -20,6 +21,7 @@ struct Character: Codable {
         }
     }
     
+    //Populated via separate network call if character is picked in the picker for detailed display.
     var detail: CharacterDetail?
     
     enum CodingKeys: String, CodingKey {

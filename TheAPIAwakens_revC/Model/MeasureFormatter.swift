@@ -8,31 +8,43 @@
 
 import Foundation
 
+//Static functions for cost and measurement conversions and formatting.
 class MeasureFormatter {
     
-    static func formatCost(_ cost: Int?) -> String {
+    //Format and convert (if required) the cost based on currency selected
+    static func formatCost(_ cost: Int?, in currency: Currency) -> String {
         
-        guard let cost = cost else { return "Unknown" }
+        guard var cost = cost else { return "Unknown" }
         
+        //Formatter object parameters:
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = Locale.current
         formatter.usesSignificantDigits = false
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 0
+        
+        //Convert currency if required:
+        if currency == .usd {
+            cost = cost * Currency.usd.rawValue
+        }
+        
+        //Format the cost based on magnitude:
         switch cost {
         case 0..<10_000:
-            
             return formatter.string(from: NSNumber(value: cost)) ?? ""
         case 10_000..<1_000_000:
             return ("\(formatter.string(from: NSNumber(value: cost/1_000)) ?? "") K")
         case 1_000_000..<1_000_000_000:
             return ("\(formatter.string(from: NSNumber(value: cost/1_000_000)) ?? "") M")
-        default:
+        case 1_000_000_000..<1_000_000_000_000:
             return ("\(formatter.string(from: NSNumber(value: cost/1_000_000_000)) ?? "") B")
+        default:
+            return ("\(formatter.string(from: NSNumber(value: cost/1_000_000_000_000)) ?? "") T")
         }
     }
     
+    //Format and convert (if required) length measurements based on measurement type selected
     static func formatLength(_ length: Double?, measureType: MeasureType) -> String {
         
         guard let length = length else { return "Unknown" }

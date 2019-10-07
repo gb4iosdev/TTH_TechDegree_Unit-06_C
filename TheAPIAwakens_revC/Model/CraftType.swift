@@ -8,6 +8,7 @@
 
 import Foundation
 
+//To assist with retrieving crafts in the Piloted Craft Tableview controller
 enum CraftType {
     case vehicle
     case starship

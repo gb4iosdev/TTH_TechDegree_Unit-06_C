@@ -8,7 +8,8 @@
 
 import Foundation
 
-//Note - raw value used for segue matching!
+//Type to keep track of user selection of entity - plural to refer to all entities.
+//Note - do not change raw value - used for segue matching!
 enum AllEntities: String {
     case characters
     case vehicles

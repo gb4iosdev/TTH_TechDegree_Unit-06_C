@@ -10,6 +10,7 @@ import Foundation
 
 struct StarshipDetail: Codable {
     
+    //Straight JSON fills from coding keys:
     let make: String
     private let costString: String
     var cost: Int? {
@@ -18,6 +19,7 @@ struct StarshipDetail: Codable {
     let craftClass: String
     let crewCapacity: String
     
+    //Mapping/Bridge between the JSON dictionary keys and model variables
     enum CodingKeys: String, CodingKey {
         case make = "model"
         case costString = "cost_in_credits"
