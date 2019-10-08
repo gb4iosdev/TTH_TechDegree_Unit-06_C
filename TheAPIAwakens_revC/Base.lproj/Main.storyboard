@@ -400,19 +400,41 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="49.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pilots:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dyB-0p-bb8">
+                                                <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pilots:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dyB-0p-bb8">
                                                     <rect key="frame" x="15" y="10.5" width="71" height="29"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                     <color key="textColor" red="0.49546158309999999" green="0.8449402452" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="4,000" borderStyle="roundedRect" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qTm-eD-H2A" userLabel="ExchangeRateTextField">
+                                                    <rect key="frame" x="115" y="8.5" width="100" height="33"/>
+                                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="100" id="xH1-cg-yZK"/>
+                                                    </constraints>
+                                                    <color key="textColor" red="0.68652552369999997" green="0.67004287240000004" blue="0.69887697699999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USD = 1 GCr" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i6b-yj-LfT" userLabel="ExchangeRateLabel">
+                                                    <rect key="frame" x="235" y="10.5" width="132" height="29"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="i6b-yj-LfT" firstAttribute="centerY" secondItem="Miz-KZ-Mf3" secondAttribute="centerY" id="2Bf-zG-JKP"/>
                                                 <constraint firstItem="dyB-0p-bb8" firstAttribute="centerY" secondItem="Miz-KZ-Mf3" secondAttribute="centerY" id="NQL-xu-bGD"/>
+                                                <constraint firstItem="i6b-yj-LfT" firstAttribute="leading" secondItem="qTm-eD-H2A" secondAttribute="trailing" constant="20" id="i3C-8H-2jx"/>
+                                                <constraint firstItem="qTm-eD-H2A" firstAttribute="centerY" secondItem="Miz-KZ-Mf3" secondAttribute="centerY" id="rVH-3r-5Xb"/>
                                                 <constraint firstItem="dyB-0p-bb8" firstAttribute="leading" secondItem="Miz-KZ-Mf3" secondAttribute="leading" constant="15" id="wTu-Ys-ycS"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="qTm-eD-H2A" firstAttribute="leading" secondItem="q7k-sR-rEB" secondAttribute="leading" constant="115" id="fNm-th-cIr"/>
+                                        </constraints>
                                         <connections>
                                             <segue destination="g6p-eL-CaY" kind="show" identifier="pilotedVehicles" id="4Bz-ks-fww"/>
                                         </connections>
@@ -530,6 +552,8 @@
                     <connections>
                         <outlet property="creditsButton" destination="iYT-Ci-9Dd" id="AVU-7K-pQc"/>
                         <outlet property="entityPicker" destination="Mgu-Pu-v9I" id="nfh-aa-Ahi"/>
+                        <outlet property="exchangeRateLabel" destination="i6b-yj-LfT" id="dbw-db-1eE"/>
+                        <outlet property="exchangeRateTextField" destination="qTm-eD-H2A" id="n3f-Qy-L7m"/>
                         <outlet property="headerLabel" destination="jXu-yf-Snz" id="RfC-WF-pdn"/>
                         <outlet property="imperialButton" destination="sYg-rj-zgD" id="dbs-kZ-fC1"/>
                         <outlet property="longestButton" destination="XkO-s5-cS2" id="b4P-gW-aSG"/>

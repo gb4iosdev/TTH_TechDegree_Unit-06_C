@@ -39,6 +39,9 @@ class EntityDetailController: UITableViewController {
     @IBOutlet weak var pilotsCell: UITableViewCell!
     @IBOutlet weak var pilotsLabel: UILabel!
     
+    @IBOutlet weak var exchangeRateTextField: UITextField!
+    @IBOutlet weak var exchangeRateLabel: UILabel!
+    
     @IBOutlet weak var entityPicker: UIPickerView!
     @IBOutlet weak var shortestLabel: UILabel!
     @IBOutlet weak var shortestButton: UIButton!
@@ -473,7 +476,9 @@ extension EntityDetailController {
             usdButton.isHidden = true
             creditsButton.isHidden = true
             longestLabel.text = "Tallest"
-            pilotsLabel.isHidden = false
+            pilotsLabel.text = "Pilots:"
+            exchangeRateLabel.isHidden = true
+            exchangeRateTextField.isHidden = true
             
             
         case .vehicles, .starships:
@@ -485,8 +490,11 @@ extension EntityDetailController {
             usdButton.isHidden = false
             creditsButton.isHidden = false
             longestLabel.text = "Longest"
-            pilotsLabel.isHidden = true
+            pilotsLabel.text = "Forex:"
             pilotsCell.accessoryType = .none
+            exchangeRateLabel.isHidden = false
+            exchangeRateTextField.isHidden = false
+
         }
     }
     
