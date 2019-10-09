@@ -14,7 +14,8 @@ class MeasureFormatter {
     //Format and convert (if required) the cost based on currency selected
     static func formatCost(_ cost: Int?, in currency: Currency) -> String {
         
-        guard var cost = cost else { return "Unknown" }
+        guard let costInt = cost else { return "Unknown" }
+        var cost = Double(costInt)
         
         //Formatter object parameters:
         let formatter = NumberFormatter()
@@ -26,7 +27,7 @@ class MeasureFormatter {
         
         //Convert currency if required:
         if currency == .usd {
-            cost = cost * Currency.usd.rawValue
+            cost = cost * CurrencyExchange.usdRate()
         }
         
         //Format the cost based on magnitude:

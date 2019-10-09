@@ -426,7 +426,7 @@ extension EntityDetailController {
 }
 
 //MARK: - Helper Methods - UI
-extension EntityDetailController {
+extension EntityDetailController: UITextFieldDelegate {
     
     //Display shortest/Longest entities and display the values for first entity in the picker.
     func updateUI(){
@@ -492,9 +492,6 @@ extension EntityDetailController {
             longestLabel.text = "Longest"
             pilotsLabel.text = "Forex:"
             pilotsCell.accessoryType = .none
-            exchangeRateLabel.isHidden = false
-            exchangeRateTextField.isHidden = false
-
         }
     }
     
@@ -518,6 +515,8 @@ extension EntityDetailController {
                 pilotsCell.isUserInteractionEnabled = false
                 pilotsLabel.alpha = 0.5
             }
+        } else {     //Dealing with a vehicle or starship
+            exchangeRateTextField.text = CurrencyExchange.usdDescription()
         }
         
         showFields(setTo: true)
@@ -526,11 +525,19 @@ extension EntityDetailController {
     //Helper method to expose or hide fields as required.
     func showFields(setTo: Bool) {
         
+        guard let entities = self.allEntities else { return }
+        
         headerLabel.isHidden = !setTo
         
         for field in mainRowFields {
             field.isHidden = !setTo
         }
+        
+        if entities != .characters {
+            exchangeRateLabel.isHidden = false
+            exchangeRateTextField.isHidden = false
+        }
+
     }
 
     func initializeUI() {
@@ -570,7 +577,52 @@ extension EntityDetailController {
         headerLabel.adjustsFontSizeToFitWidth = true
         mainRowFields[0].adjustsFontSizeToFitWidth = true
         mainRowFields[3].adjustsFontSizeToFitWidth = true
+        
+        //Configure delegates and functions for keyboard interactions
+        configureExchangeRateTextField()
     }
+    
+    func configureExchangeRateTextField () {
+        //To set this class as the delegate and receive event calls
+        exchangeRateTextField.delegate = self
+        
+        //Keyboard observers:  Might not need these
+        NotificationCenter.default.addObserver(self, selector: #selector(EntityDetailController.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+//
+//        NotificationCenter.default.addObserver(self, selector: #selector(EntityDetailController.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    //Reset the currently active text filed to nil when finished editing the text field
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        guard let text = textField.text, let rate = Double(text) else { return false }
+        
+        //Set the new currency rate
+        CurrencyExchange.setCurrency(to: rate)
+        //Update the UI if user has selected USD, otherwise it will happen on next change/view model refresh
+        if self.currencyType == .usd {
+            conversionUpdate()
+        }
+        return true
+    }
+    
+    @objc func keyboardWillShow() {
+        let keyboardDoneButtonView = UIToolbar.init()
+        keyboardDoneButtonView.sizeToFit()
+        let doneButton = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.done,
+                                              target: self,
+                                              action: #selector(EntityDetailController.doneClicked(_:)))
+        
+        keyboardDoneButtonView.items = [doneButton]
+        exchangeRateTextField.inputAccessoryView = keyboardDoneButtonView
+    }
+    
+    @objc func doneClicked() {
+        self.view.endEditing(true)
+        print("done was clicked")
+    }
+
+
     
     //Regenerate view model and display with reference to new measure and/or currency settings
     func conversionUpdate() {

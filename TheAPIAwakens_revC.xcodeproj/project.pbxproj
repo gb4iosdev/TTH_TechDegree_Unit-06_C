@@ -31,11 +31,12 @@
 		86379B44234404C000EEEC45 /* StarshipViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86379B43234404C000EEEC45 /* StarshipViewModel.swift */; };
 		864328AC2347C11F007C029E /* MeasureFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864328AB2347C11F007C029E /* MeasureFormatter.swift */; };
 		864F4CE4234A02AB006F7614 /* MeasureType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864F4CE3234A02AB006F7614 /* MeasureType.swift */; };
-		864F4CE6234A8081006F7614 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864F4CE5234A8081006F7614 /* Currency.swift */; };
+		864F4CE6234A8081006F7614 /* CurrencyExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864F4CE5234A8081006F7614 /* CurrencyExchange.swift */; };
 		8669746523413D8D00FE87E5 /* VehicleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8669746323413D8D00FE87E5 /* VehicleViewModel.swift */; };
 		8669746623413D8D00FE87E5 /* CharacterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8669746423413D8D00FE87E5 /* CharacterViewModel.swift */; };
 		8669746823413F6900FE87E5 /* EntityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8669746723413F6900FE87E5 /* EntityViewModel.swift */; };
 		868D0FDA23420C6F001B7AEB /* PilotedCraftController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868D0FD923420C6F001B7AEB /* PilotedCraftController.swift */; };
+		86B6C033234D65D000EB3117 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B6C032234D65D000EB3117 /* Currency.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,11 +66,12 @@
 		86379B43234404C000EEEC45 /* StarshipViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarshipViewModel.swift; sourceTree = "<group>"; };
 		864328AB2347C11F007C029E /* MeasureFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureFormatter.swift; sourceTree = "<group>"; };
 		864F4CE3234A02AB006F7614 /* MeasureType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureType.swift; sourceTree = "<group>"; };
-		864F4CE5234A8081006F7614 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		864F4CE5234A8081006F7614 /* CurrencyExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyExchange.swift; sourceTree = "<group>"; };
 		8669746323413D8D00FE87E5 /* VehicleViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewModel.swift; sourceTree = "<group>"; };
 		8669746423413D8D00FE87E5 /* CharacterViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterViewModel.swift; sourceTree = "<group>"; };
 		8669746723413F6900FE87E5 /* EntityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityViewModel.swift; sourceTree = "<group>"; };
 		868D0FD923420C6F001B7AEB /* PilotedCraftController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PilotedCraftController.swift; sourceTree = "<group>"; };
+		86B6C032234D65D000EB3117 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,8 +132,9 @@
 				86379B412343F4BF00EEEC45 /* StarshipDetail.swift */,
 				86024C4E2340393D0026A7E5 /* EntityName.swift */,
 				864328AB2347C11F007C029E /* MeasureFormatter.swift */,
-				864F4CE5234A8081006F7614 /* Currency.swift */,
+				864F4CE5234A8081006F7614 /* CurrencyExchange.swift */,
 				864F4CE3234A02AB006F7614 /* MeasureType.swift */,
+				86B6C032234D65D000EB3117 /* Currency.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -257,13 +260,14 @@
 			files = (
 				86379B422343F4BF00EEEC45 /* StarshipDetail.swift in Sources */,
 				86024C512340393D0026A7E5 /* CraftType.swift in Sources */,
-				864F4CE6234A8081006F7614 /* Currency.swift in Sources */,
+				864F4CE6234A8081006F7614 /* CurrencyExchange.swift in Sources */,
 				86024C35233FE0030026A7E5 /* StartScreenController.swift in Sources */,
 				86024C502340393D0026A7E5 /* Starship.swift in Sources */,
 				86024C462340390C0026A7E5 /* Endpoint.swift in Sources */,
 				86024C37233FE6D50026A7E5 /* EntityDetailController.swift in Sources */,
 				8669746623413D8D00FE87E5 /* CharacterViewModel.swift in Sources */,
 				86379B44234404C000EEEC45 /* StarshipViewModel.swift in Sources */,
+				86B6C033234D65D000EB3117 /* Currency.swift in Sources */,
 				86024C452340390C0026A7E5 /* StarWarsAPIClient.swift in Sources */,
 				86024C3F234038F30026A7E5 /* Starships.swift in Sources */,
 				86024C562340393D0026A7E5 /* EntityName.swift in Sources */,

@@ -414,7 +414,7 @@
                                                     </constraints>
                                                     <color key="textColor" red="0.68652552369999997" green="0.67004287240000004" blue="0.69887697699999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad" enablesReturnKeyAutomatically="YES"/>
                                                 </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USD = 1 GCr" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i6b-yj-LfT" userLabel="ExchangeRateLabel">
                                                     <rect key="frame" x="235" y="10.5" width="132" height="29"/>
