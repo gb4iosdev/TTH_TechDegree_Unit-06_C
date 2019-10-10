@@ -140,26 +140,37 @@ class EntityDetailController: UITableViewController {
         metricButton.isUserInteractionEnabled = false
     }
     
-    //Set the currency type, control button behaviour.
+    //Set the currency type, control button/textfield behaviour.
     @IBAction func usdButtonPressed(_ sender: UIButton) {
-        currencyType = .usd
+        currencyType = .usd     //Triggers Model update with conversion and UI refresh
         usdButton.setTitleColor(.lightGray, for: .normal)
         creditsButton.setTitleColor(.white, for: .normal)
         usdButton.isUserInteractionEnabled = false
         creditsButton.isUserInteractionEnabled = true
-        
+        exchangeRateTextField.isHidden = false
+        exchangeRateLabel.isHidden = false
     }
     
-    //Set the currency type, control button behaviour.
+    //Set the currency type, control button/textfield behaviour.
     @IBAction func creditButtonPressed(_ sender: UIButton) {
-        currencyType = .credits
+        
+        //Check for valid entry on text field
+        guard validRateEntered() else { return }
+        
+        //Remove the keyboard if it was up (exchange no longer appplies)
+        exchangeRateTextField.resignFirstResponder()
+        
+        exchangeRateTextField.isHidden = true
+        exchangeRateLabel.isHidden = true
+        currencyType = .credits     //Triggers Model update with conversion and UI refresh
         usdButton.setTitleColor(.white, for: .normal)
         creditsButton.setTitleColor(.lightGray, for: .normal)
         usdButton.isUserInteractionEnabled = true
         creditsButton.isUserInteractionEnabled = false
+        
+        
     }
-    
-    
+
 }
 
 
@@ -533,7 +544,7 @@ extension EntityDetailController: UITextFieldDelegate {
             field.isHidden = !setTo
         }
         
-        if entities != .characters {
+        if entities != .characters && currencyType == .usd {
             exchangeRateLabel.isHidden = false
             exchangeRateTextField.isHidden = false
         }
@@ -587,39 +598,51 @@ extension EntityDetailController: UITextFieldDelegate {
         exchangeRateTextField.delegate = self
         
         //Keyboard observers:  Might not need these
-        NotificationCenter.default.addObserver(self, selector: #selector(EntityDetailController.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
 //
 //        NotificationCenter.default.addObserver(self, selector: #selector(EntityDetailController.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    //Reset the currently active text filed to nil when finished editing the text field
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        guard let text = textField.text, let rate = Double(text) else { return false }
+    @objc func keyboardWillShow(_ notification: Notification) {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.whenTapped(gestureRecognizer:)))
+        tableView.addGestureRecognizer(tap)
+        //entityPicker.addGestureRecognizer(tap)
+    }
+    
+    @objc func whenTapped(gestureRecognizer: UIGestureRecognizer) {
+        guard validRateEntered() else { return }
         
-        //Set the new currency rate
-        CurrencyExchange.setCurrency(to: rate)
-        //Update the UI if user has selected USD, otherwise it will happen on next change/view model refresh
-        if self.currencyType == .usd {
+        // Remove the gesture recognizer:
+        tableView.removeGestureRecognizer(gestureRecognizer)
+        //Close the decimal pad
+        exchangeRateTextField.resignFirstResponder()
+        
+        //Write the new value & update UI
+        if let rateText = exchangeRateTextField.text, let rate = Double(rateText) {
+            CurrencyExchange.setCurrency(to: rate)
             conversionUpdate()
+        }
+    }
+    
+    func validRateEntered() -> Bool {
+        //Check that the field is not empty or has more than 2 decimals
+        guard exchangeRateTextField.text != "" && exchangeRateTextField.text != "." else {
+            simpleAlertWithMessage("Text field must contain digits")
+            return false
+        }
+        let count = exchangeRateTextField.text?.filter { $0 == "." }.count ?? 0
+        guard count <= 1 else {
+            simpleAlertWithMessage("Only 1 decimal point permitted")
+            return false
         }
         return true
     }
     
-    @objc func keyboardWillShow() {
-        let keyboardDoneButtonView = UIToolbar.init()
-        keyboardDoneButtonView.sizeToFit()
-        let doneButton = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.done,
-                                              target: self,
-                                              action: #selector(EntityDetailController.doneClicked(_:)))
-        
-        keyboardDoneButtonView.items = [doneButton]
-        exchangeRateTextField.inputAccessoryView = keyboardDoneButtonView
-    }
-    
-    @objc func doneClicked() {
-        self.view.endEditing(true)
-        print("done was clicked")
+    func simpleAlertWithMessage(_ message: String) {
+        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let alert = UIAlertController(title: "Invalid Exchange Rate", message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(action)
+        self.present(alert, animated: true, completion: nil)
     }
 
 

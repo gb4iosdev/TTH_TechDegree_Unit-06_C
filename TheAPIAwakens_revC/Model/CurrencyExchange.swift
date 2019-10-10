@@ -14,10 +14,10 @@ struct CurrencyExchange {
     private static var usd: Double = 400
     
     static func usdDescription() -> String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        let formattedNumber = numberFormatter.string(from: NSNumber(value: self.usd))
-        return String(formattedNumber ?? "")
+//        let numberFormatter = NumberFormatter()
+//        numberFormatter.numberStyle = .currency
+//        let formattedNumber = numberFormatter.string(from: NSNumber(value: self.usd))
+        return String(usd)
     }
     
     static func usdRate() -> Double {
