@@ -297,18 +297,21 @@ extension EntityDetailController {
                     //Check if there is a next page, and that it can be created into an URL.  If so, call this method again.
                     if let nextURL = nextURL {
                         self.retrieveAllEntities(using: nextURL, toType: type)
-                    } else {        //Final page and allEntity static arrays are loaded.  Sort the entities by name & determine longest & shortest.
-                        if let _ = entities as? People {
-                            People.configure()
+                    } else {        //Final page and allEntity static arrays are loaded.  Get back on the main thread.
+                        //Sort the entities by name & determine longest & shortest using the configure method.
+                        DispatchQueue.main.async {
+                            if let _ = entities as? People {
+                                People.configure()
+                            }
+                            else if let _ = entities as? Vehicles {
+                                Vehicles.configure()
+                            } else if let _ = entities as? Starships {
+                                Starships.configure()
+                            }
+                            //Reload the picker & update the fields.
+                            self.entityPicker.reloadAllComponents()
+                            self.updateUI()
                         }
-                        else if let _ = entities as? Vehicles {
-                            Vehicles.configure()
-                        } else if let _ = entities as? Starships {
-                            Starships.configure()
-                        }
-                        //Reload the picker & update the fields.
-                        self.entityPicker.reloadAllComponents()
-                        self.updateUI()
                     }
                 } else {
                     print("Error: in retrieveStarWarsPage is: \(String(describing: error))")
@@ -327,15 +330,18 @@ extension EntityDetailController {
         
         client.getStarWarsData(from: detail.homeworldURL, toType: EntityName.self) { [unowned self] planetDetail, error in
             if let planetDetail = planetDetail {
-                detail.home = planetDetail.name
-                //Write back to the allEntities static array
-                character.detail = detail
-                People.allEntities[index] = character
-                //Regenerate the view model and display
-                if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
-                    self.setFieldValues(using: viewModel)
-                } else {
-                    print("Error: Could not create view model")
+                //Get back on the main thread.
+                DispatchQueue.main.async {
+                    detail.home = planetDetail.name
+                    //Write back to the allEntities static array
+                    character.detail = detail
+                    People.allEntities[index] = character
+                    //Regenerate the view model and display
+                    if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
+                        self.setFieldValues(using: viewModel)
+                    } else {
+                        print("Error: Could not create view model")
+                    }
                 }
             } else {
                 print("Error: Fetch results could not be cast to type:\(String(describing: error))")
@@ -355,12 +361,15 @@ extension EntityDetailController {
             //Check to see if the character detail is missing
             if character.detail == nil {
                 client.getStarWarsData(from: character.url, toType: CharacterDetail.self) { [unowned self] characterDetail, error in
-                    if let characterDetail = characterDetail {
-                        character.detail = characterDetail
-                        //Fetch homeworld name & update UI
-                        self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
-                    } else {
-                        print("Error: Fetch results could not be cast to type:\(String(describing: error))")
+                    //Get back on the main thread.
+                    DispatchQueue.main.async {
+                        if let characterDetail = characterDetail {
+                            character.detail = characterDetail
+                            //Fetch homeworld name & update UI
+                            self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
+                        } else {
+                            print("Error: Fetch results could not be cast to type:\(String(describing: error))")
+                        }
                     }
                 }
             } else {    //Data exists - simply load
@@ -379,15 +388,18 @@ extension EntityDetailController {
             if vehicle.detail == nil {
                 client.getStarWarsData(from: vehicle.url, toType: VehicleDetail.self) { [unowned self] vehicleDetail, error in
                     if let vehicleDetail = vehicleDetail {
-                        //Assign to the network call results to the vehicle’s detail property
-                        vehicle.detail = vehicleDetail
-                        //Write back to the allEntities static array
-                        Vehicles.allEntities[pickerRowNumber] = vehicle
-                        //Create the view model with reference to the selected measure type and currency.
-                        if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
-                            self.setFieldValues(using: viewModel)
-                        } else {
-                            print("Error: Could not create view model")
+                        //Get back on the main thread.
+                        DispatchQueue.main.async {
+                            //Assign to the network call results to the vehicle’s detail property
+                            vehicle.detail = vehicleDetail
+                            //Write back to the allEntities static array
+                            Vehicles.allEntities[pickerRowNumber] = vehicle
+                            //Create the view model with reference to the selected measure type and currency.
+                            if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
+                                self.setFieldValues(using: viewModel)
+                            } else {
+                                print("Error: Could not create view model")
+                            }
                         }
                     } else {
                         print("Error: Fetch results could not be cast to type:\(String(describing: error))")
@@ -407,19 +419,22 @@ extension EntityDetailController {
             //Check to see if the starship detail is missing
             if starship.detail == nil {
                 client.getStarWarsData(from: starship.url, toType: StarshipDetail.self) { [unowned self] starshipDetail, error in
-                    if let starshipDetail = starshipDetail {
-                        //Assign to the network call results to the starship’s detail property
-                        starship.detail = starshipDetail
-                        //Write back to the allEntities static array
-                        Starships.allEntities[pickerRowNumber] = starship
-                        //Create the view model with reference to the selected measure type and currency.
-                        if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
-                            self.setFieldValues(using: viewModel)
+                    //Get back on the main thread.
+                    DispatchQueue.main.async {
+                        if let starshipDetail = starshipDetail {
+                            //Assign to the network call results to the starship’s detail property
+                            starship.detail = starshipDetail
+                            //Write back to the allEntities static array
+                            Starships.allEntities[pickerRowNumber] = starship
+                            //Create the view model with reference to the selected measure type and currency.
+                            if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
+                                self.setFieldValues(using: viewModel)
+                            } else {
+                                print("Error: Could not create view model")
+                            }
                         } else {
-                            print("Error: Could not create view model")
+                            print("Error: Fetch results could not be cast to type:\(String(describing: error))")
                         }
-                    } else {
-                        print("Error: Fetch results could not be cast to type:\(String(describing: error))")
                     }
                 }
             } else {    //Data exists - simply load

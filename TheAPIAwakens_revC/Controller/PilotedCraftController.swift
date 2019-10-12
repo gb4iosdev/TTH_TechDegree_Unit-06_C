@@ -150,16 +150,19 @@ extension PilotedCraftController {
                     nameArray.append(entity.name)
                     //Check if this was the last fetch for this craft type:
                     if numberOfFetches == requiredFetches {
-                        //Save this array to the class variable for later tableview retrieval:
-                        switch  craftType {
-                        case .vehicle:
-                            self.sectionData[0] = nameArray
-                        case .starship:
-                            self.sectionData[1] = nameArray
-                        }
-                        //Check overall fetches to see if sections array can be written to
-                        if self.allActualFetches == self.allExpectedFetches {
-                            self.tableView.reloadData()
+                        //Get back on the main thread.
+                        DispatchQueue.main.async {
+                            //Save this array to the class variable for later tableview retrieval:
+                            switch  craftType {
+                            case .vehicle:
+                                self.sectionData[0] = nameArray
+                            case .starship:
+                                self.sectionData[1] = nameArray
+                            }
+                            //Check overall fetches to see if sections array can be written to
+                            if self.allActualFetches == self.allExpectedFetches {
+                                self.tableView.reloadData()
+                            }
                         }
                     }
                 } else {

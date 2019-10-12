@@ -32,26 +32,24 @@ class StarWarsAPIClient {
         let request = URLRequest(url: starWarsAPIURL)
         
         let task = session.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                if let data = data {
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        completion(nil, StarWarsAPIError.requestFailed)
-                        return
-                    }
-                    if httpResponse.statusCode == 200 {
-                        do {
-                            let entity = try self.decoder.decode(type, from: data)
-                            completion(entity, nil)
-                            
-                        } catch {
-                            completion(nil, StarWarsAPIError.jsonParsingFailure)
-                        }
-                    } else {
-                        completion(nil, StarWarsAPIError.responseUnsuccessful(statusCode: httpResponse.statusCode))
-                    }
-                } else if let error = error {
-                    completion(nil, StarWarsAPIError.noDataReturnedFromDataTask(detail: error.localizedDescription))
+            if let data = data {
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(nil, StarWarsAPIError.requestFailed)
+                    return
                 }
+                if httpResponse.statusCode == 200 {
+                    do {
+                        let entity = try self.decoder.decode(type, from: data)
+                        completion(entity, nil)
+                        
+                    } catch {
+                        completion(nil, StarWarsAPIError.jsonParsingFailure)
+                    }
+                } else {
+                    completion(nil, StarWarsAPIError.responseUnsuccessful(statusCode: httpResponse.statusCode))
+                }
+            } else if let error = error {
+                completion(nil, StarWarsAPIError.noDataReturnedFromDataTask(detail: error.localizedDescription))
             }
         }
         
