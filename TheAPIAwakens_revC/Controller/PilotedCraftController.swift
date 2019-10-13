@@ -27,7 +27,7 @@ class PilotedCraftController: UITableViewController {
         super.viewDidLoad()
         
         //At a minimum need a character and it's detail to be popuolated to proceed
-        guard let character = character, let detail = character.detail else {
+        guard let character = character else {
             print("Error:  Character not loaded")
             return
         }
@@ -35,14 +35,14 @@ class PilotedCraftController: UITableViewController {
         initializeUI()      //Show character's name in nav bar title
         
         if character.hasAlreadyFetchedCraft() {         //Prevent un-needed network re-fetch.
-            sectionData[0] = detail.vehicleNames ?? []
-            sectionData[1] = detail.starshipNames ?? []
+            sectionData[0] = character.vehicleNames ?? []
+            sectionData[1] = character.starshipNames ?? []
         } else {          //Need a network call
             //Calculate the expected number of fetches
-            self.allExpectedFetches = detail.vehiclesPiloted.count + detail.starshipsPiloted.count
+            self.allExpectedFetches = character.vehiclesPiloted.count + character.starshipsPiloted.count
             //Network calls:
-            fetchCraftForCharacter(using: detail.vehiclesPiloted, for: CraftType.vehicle)
-            fetchCraftForCharacter(using: detail.starshipsPiloted, for: CraftType.starship)
+            fetchCraftForCharacter(using: character.vehiclesPiloted, for: CraftType.vehicle)
+            fetchCraftForCharacter(using: character.starshipsPiloted, for: CraftType.starship)
         }
         
         

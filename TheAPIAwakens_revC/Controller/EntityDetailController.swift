@@ -323,18 +323,13 @@ extension EntityDetailController {
     //Performed after retrieving the main detail for the character (which contains the homeworld URL), and before updating the UI.
     func fetchCharacterHomeworld(for character: Character, withPeopleIndex index: Int) {
         
-        //Ensure character detail is available:
-        guard var detail = character.detail else { return }
-        
         var character = character
         
-        client.getStarWarsData(from: detail.homeworldURL, toType: EntityName.self) { [unowned self] planetDetail, error in
+        client.getStarWarsData(from: character.homeworldURL, toType: EntityName.self) { [unowned self] planetDetail, error in
             if let planetDetail = planetDetail {
                 //Get back on the main thread.
                 DispatchQueue.main.async {
-                    detail.home = planetDetail.name
-                    //Write back to the allEntities static array
-                    character.detail = detail
+                    character.home = planetDetail.name
                     People.allEntities[index] = character
                     //Regenerate the view model and display
                     if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
@@ -357,21 +352,10 @@ extension EntityDetailController {
         switch entities {
         case .characters:
             //Get the picked character from the datasource
-            var character = People.allEntities[pickerRowNumber]
-            //Check to see if the character detail is missing
-            if character.detail == nil {
-                client.getStarWarsData(from: character.url, toType: CharacterDetail.self) { [unowned self] characterDetail, error in
-                    //Get back on the main thread.
-                    DispatchQueue.main.async {
-                        if let characterDetail = characterDetail {
-                            character.detail = characterDetail
-                            //Fetch homeworld name & update UI
-                            self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
-                        } else {
-                            print("Error: Fetch results could not be cast to type:\(String(describing: error))")
-                        }
-                    }
-                }
+            let character = People.allEntities[pickerRowNumber]
+            //Check to see if the character home name is missing
+            if character.home == nil {
+                self.fetchCharacterHomeworld(for: character, withPeopleIndex: pickerRowNumber)
             } else {    //Data exists - simply load
                 if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
                     setFieldValues(using: viewModel)
@@ -383,69 +367,23 @@ extension EntityDetailController {
             
         case .vehicles:
             //Get the picked vehicle from the datasource
-            var vehicle = Vehicles.allEntities[pickerRowNumber]
-            //Check to see if the vehicle detail is missing
-            if vehicle.detail == nil {
-                client.getStarWarsData(from: vehicle.url, toType: VehicleDetail.self) { [unowned self] vehicleDetail, error in
-                    if let vehicleDetail = vehicleDetail {
-                        //Get back on the main thread.
-                        DispatchQueue.main.async {
-                            //Assign to the network call results to the vehicle’s detail property
-                            vehicle.detail = vehicleDetail
-                            //Write back to the allEntities static array
-                            Vehicles.allEntities[pickerRowNumber] = vehicle
-                            //Create the view model with reference to the selected measure type and currency.
-                            if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
-                                self.setFieldValues(using: viewModel)
-                            } else {
-                                print("Error: Could not create view model")
-                            }
-                        }
-                    } else {
-                        print("Error: Fetch results could not be cast to type:\(String(describing: error))")
-                    }
-                }
-            } else {    //Data exists - simply load
-                if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
-                    setFieldValues(using: viewModel)
-                } else {
-                    print("Error: Could not create view model")
-                }
+            let vehicle = Vehicles.allEntities[pickerRowNumber]
+            //Create the view model and set the field values
+            if let viewModel = CraftViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
+                setFieldValues(using: viewModel)
+            } else {
+                print("Error: Could not create view model")
             }
             
         case .starships:
             //Get the picked starship from the datasource
-            var starship = Starships.allEntities[pickerRowNumber]
-            //Check to see if the starship detail is missing
-            if starship.detail == nil {
-                client.getStarWarsData(from: starship.url, toType: StarshipDetail.self) { [unowned self] starshipDetail, error in
-                    //Get back on the main thread.
-                    DispatchQueue.main.async {
-                        if let starshipDetail = starshipDetail {
-                            //Assign to the network call results to the starship’s detail property
-                            starship.detail = starshipDetail
-                            //Write back to the allEntities static array
-                            Starships.allEntities[pickerRowNumber] = starship
-                            //Create the view model with reference to the selected measure type and currency.
-                            if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
-                                self.setFieldValues(using: viewModel)
-                            } else {
-                                print("Error: Could not create view model")
-                            }
-                        } else {
-                            print("Error: Fetch results could not be cast to type:\(String(describing: error))")
-                        }
-                    }
-                }
-            } else {    //Data exists - simply load
-                print("Data already exists for \(starship.name) - no need for network call")
-                if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
-                    setFieldValues(using: viewModel)
-                } else {
-                    print("Error: Could not create view model")
-                }
-            }
-        }
+            let starship = Starships.allEntities[pickerRowNumber]
+            //Create the view model and set the field values
+            if let viewModel = CraftViewModel(from: starship, with: self.measureType, in: self.currencyType) {
+                setFieldValues(using: viewModel)
+            } else {
+                print("Error: Could not create view model")
+            }        }
     }
 
 
@@ -675,12 +613,12 @@ extension EntityDetailController: UITextFieldDelegate {
             }
         case .vehicles:
             let vehicle = Vehicles.allEntities[entityPicker.selectedRow(inComponent: 0)]
-            if let viewModel = VehicleViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
+            if let viewModel = CraftViewModel(from: vehicle, with: self.measureType, in: self.currencyType) {
                 setFieldValues(using: viewModel)
             }
         case .starships:
             let starship = Starships.allEntities[entityPicker.selectedRow(inComponent: 0)]
-            if let viewModel = StarshipViewModel(from: starship, with: self.measureType, in: self.currencyType) {
+            if let viewModel = CraftViewModel(from: starship, with: self.measureType, in: self.currencyType) {
                 setFieldValues(using: viewModel)
             }
         }

@@ -9,22 +9,35 @@
 import Foundation
 
 //Single starship header information.  Enough to populate the picker and enable longest/shortest length determination.
-struct Starship: Codable {
+struct Starship: Codable, Craft {
     
+    //Straight JSON fills from coding keys:
     let name: String
     let url: URL
     private let lengthString: String
+    let make: String
+    private let costString: String
+    let craftClass: String
+    let crewCapacity: String
+    let craftType: CraftType = .starship
+    
+    //Calculated fields
     var length: Double? {
         return Double(lengthString)
     }
+    var cost: Int? {
+        return Int(costString)
+    }
     
-    //Populated via separate network call if starship is picked in the picker for detailed display.
-    var detail: StarshipDetail?
-    
+    //Mapping/Bridge between the JSON dictionary keys and model variables
     enum CodingKeys: String, CodingKey {
         case name
         case lengthString = "length"
         case url
+        case make = "model"
+        case costString = "cost_in_credits"
+        case craftClass = "starship_class"
+        case crewCapacity = "crew"
     }
 }
     

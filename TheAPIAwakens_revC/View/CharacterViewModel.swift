@@ -30,17 +30,12 @@ extension CharacterViewModel {
         name = character.name
         
         self.row3 = MeasureFormatter.formatLength(character.height, measureType: measureType)
+        self.row1 = character.birthYear
+        self.row4 = character.eyeColour
+        self.row5 = character.hairColour
+        self.row2 = character.home ?? ""
+        self.hasPilotedCraft = character.vehiclesPiloted.count > 0 || character.starshipsPiloted.count > 0
 
-        if let detail = character.detail {
-            self.row1 = detail.birthYear
-            self.row4 = detail.eyeColour
-            self.row5 = detail.hairColour
-            self.row2 = detail.home ?? ""
-            self.hasPilotedCraft = detail.vehiclesPiloted.count > 0 || detail.starshipsPiloted.count > 0
-            
-        } else {
-            return nil
-        }
     }
 }
 
