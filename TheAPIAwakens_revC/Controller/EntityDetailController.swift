@@ -280,7 +280,7 @@ extension EntityDetailController {
         if thisURL == nil {
             return
         } else {    //Make network call using API client with the URL
-            client.getStarWarsData(from: thisURL, toType: T.self) { [unowned self] entities, error in
+            client.getStarWarsData(from: thisURL, toType: T.self) { [weak self] entities, error in
                 if let entities = entities {
                     //Append entity to the type’s static data source variable
                     if let allEntities = entities as? People {
@@ -296,7 +296,7 @@ extension EntityDetailController {
                     
                     //Check if there is a next page, and that it can be created into an URL.  If so, call this method again.
                     if let nextURL = nextURL {
-                        self.retrieveAllEntities(using: nextURL, toType: type)
+                        self?.retrieveAllEntities(using: nextURL, toType: type)
                     } else {        //Final page and allEntity static arrays are loaded.  Get back on the main thread.
                         //Sort the entities by name & determine longest & shortest using the configure method.
                         DispatchQueue.main.async {
@@ -309,8 +309,8 @@ extension EntityDetailController {
                                 Starships.configure()
                             }
                             //Reload the picker & update the fields.
-                            self.entityPicker.reloadAllComponents()
-                            self.updateUI()
+                            self?.entityPicker.reloadAllComponents()
+                            self?.updateUI()
                         }
                     }
                 } else {
@@ -325,15 +325,15 @@ extension EntityDetailController {
         
         var character = character
         
-        client.getStarWarsData(from: character.homeworldURL, toType: EntityName.self) { [unowned self] planetDetail, error in
+        client.getStarWarsData(from: character.homeworldURL, toType: EntityName.self) { [weak self] planetDetail, error in
             if let planetDetail = planetDetail {
                 //Get back on the main thread.
                 DispatchQueue.main.async {
                     character.home = planetDetail.name
                     People.allEntities[index] = character
                     //Regenerate the view model and display
-                    if let viewModel = CharacterViewModel(from: character, with: self.measureType) {
-                        self.setFieldValues(using: viewModel)
+                    if let viewModel = CharacterViewModel(from: character, with: self?.measureType ?? .metric) {
+                        self?.setFieldValues(using: viewModel)
                     } else {
                         print("Error: Could not create view model")
                     }
@@ -448,7 +448,7 @@ extension EntityDetailController: UITextFieldDelegate {
         case .vehicles, .starships:
             mainRowLabels?[0].text = "Make"
             mainRowLabels?[1].text = "Cost"
-            mainRowLabels?[2].text = " Length"
+            mainRowLabels?[2].text = "Length"
             mainRowLabels?[3].text = "Class"
             mainRowLabels?[4].text = "Crew"
             usdButton.isHidden = false
@@ -540,6 +540,7 @@ extension EntityDetailController: UITextFieldDelegate {
         //Font size formatting - to fit label or field:
         headerLabel.adjustsFontSizeToFitWidth = true
         mainRowFields[0].adjustsFontSizeToFitWidth = true
+        mainRowFields[2].adjustsFontSizeToFitWidth = true
         mainRowFields[3].adjustsFontSizeToFitWidth = true
         
         //Configure delegates and functions for keyboard interactions

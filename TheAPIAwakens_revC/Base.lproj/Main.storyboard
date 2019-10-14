@@ -216,8 +216,8 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="21" translatesAutoresizingMaskIntoConstraints="NO" id="awr-Q0-Oym" userLabel="Currency Conversion Stack View">
-                                                    <rect key="frame" x="261" y="5.5" width="138" height="39"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="awr-Q0-Oym" userLabel="Currency Conversion Stack View">
+                                                    <rect key="frame" x="272" y="5.5" width="127" height="39"/>
                                                     <subviews>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ako-PI-8tk">
                                                             <rect key="frame" x="0.0" y="0.0" width="45" height="39"/>
@@ -235,7 +235,7 @@
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iYT-Ci-9Dd">
-                                                            <rect key="frame" x="66" y="0.0" width="72" height="39"/>
+                                                            <rect key="frame" x="55" y="0.0" width="72" height="39"/>
                                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="22"/>
                                                             <state key="normal" title="Credits">
                                                                 <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -277,13 +277,13 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1.72m" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Cs-uu-Xsa">
-                                                    <rect key="frame" x="115" y="10.5" width="68" height="29"/>
+                                                    <rect key="frame" x="115" y="10.5" width="127" height="29"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="21" translatesAutoresizingMaskIntoConstraints="NO" id="HMr-FL-WKF" userLabel="Length Conversion Stack View">
-                                                    <rect key="frame" x="236" y="5.5" width="163" height="39"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="HMr-FL-WKF" userLabel="Length Conversion Stack View">
+                                                    <rect key="frame" x="247" y="5.5" width="152" height="39"/>
                                                     <subviews>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sYg-rj-zgD">
                                                             <rect key="frame" x="0.0" y="0.0" width="79" height="39"/>
@@ -301,7 +301,7 @@
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gAO-fU-P5G">
-                                                            <rect key="frame" x="100" y="0.0" width="63" height="39"/>
+                                                            <rect key="frame" x="89" y="0.0" width="63" height="39"/>
                                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="22"/>
                                                             <state key="normal" title="Metric">
                                                                 <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -316,11 +316,15 @@
                                                             </connections>
                                                         </button>
                                                     </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="152" id="3ue-9s-N9n"/>
+                                                    </constraints>
                                                 </stackView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="5Cs-uu-Xsa" firstAttribute="centerY" secondItem="ncp-Nr-lnl" secondAttribute="centerY" id="EFi-yg-DWd"/>
                                                 <constraint firstItem="pdn-vn-CCU" firstAttribute="centerY" secondItem="ncp-Nr-lnl" secondAttribute="centerY" id="GgR-u2-N0h"/>
+                                                <constraint firstItem="HMr-FL-WKF" firstAttribute="leading" secondItem="5Cs-uu-Xsa" secondAttribute="trailing" constant="5" id="M8k-UX-pAo"/>
                                                 <constraint firstItem="HMr-FL-WKF" firstAttribute="centerY" secondItem="ncp-Nr-lnl" secondAttribute="centerY" id="a4p-Mm-foR"/>
                                                 <constraint firstItem="pdn-vn-CCU" firstAttribute="leading" secondItem="ncp-Nr-lnl" secondAttribute="leading" constant="15" id="lUP-u4-jdH"/>
                                                 <constraint firstItem="5Cs-uu-Xsa" firstAttribute="leading" secondItem="ncp-Nr-lnl" secondAttribute="leading" constant="115" id="wpM-qe-Z0V"/>
