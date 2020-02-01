@@ -60,6 +60,7 @@ class EntityDetailController: UITableViewController {
         //Set Pickerview data source and delegate
         entityPicker.delegate = self
         entityPicker.dataSource = self
+        entityPicker.setValue(UIColor.white, forKeyPath: "textColor")
         
         initializeUI()
         
